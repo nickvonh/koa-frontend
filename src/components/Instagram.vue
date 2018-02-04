@@ -74,11 +74,10 @@ export default {
         h5
             margin-top 0
     .gallery
+        display flex
         padding-left 5%
-        flex-direction row
         overflow scroll
         max-width 95%
-        display flex
         margin 25px 0
         li:first-child
             margin-left 0
