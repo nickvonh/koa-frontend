@@ -2,7 +2,7 @@
     <div :class="{footer:true}">
         <div class="footer-content">
             <div class="left">
-                <h5>Koa NYC 2017</h5>
+                <h5>Koa NYC 2018</h5>
                 <h6>
                 <a href="mailto:info@koa.nyc">info@koa.nyc</a>
                 </h6>
@@ -13,6 +13,7 @@
             <div class="right">
                 <h5>Want to find out more?</h5>
                 <button class="cta" @click="aboutUs">Our Story</button>
+                <button class="cta" @click="blog">Blog</button>
                 <button class="cta" @click="fabrics">Fabrics</button>
                 <button class="cta returns" @click="returns">Returns</button>
             </div>
@@ -38,6 +39,9 @@ export default {
     methods : {
         aboutUs(){
             this.$router.push({name:'About'})
+        },
+        blog(){
+            this.$router.push({name:'Blog'})
         },
         returns(){
             this.$router.push({name:'Returns'})

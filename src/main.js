@@ -7,6 +7,26 @@ import { ApolloClient, createNetworkInterface } from 'apollo-client'
 import VueApollo from 'vue-apollo'
 import VueFacebookPixel from 'vue-analytics-facebook-pixel'
 import VueAnalytics from 'vue-analytics'
+import VueImg from 'v-img'
+import Meta from 'vue-meta'
+import VueLazyLoad from 'vue-lazyload'
+
+Vue.use(Meta);
+Vue.use(VueLazyLoad, {
+  preLoad: 1
+});
+
+const vueImgConfig = {
+  // Use `alt` attribute as gallery slide title
+  altAsTitle: false,
+  // Display 'download' button near 'close' that opens source image in new tab
+  sourceButton: false,
+  // Event listener to open gallery will be applied to <img> element
+  openOn: 'click',
+  // Show thumbnails for all groups with more than 1 image
+  thumbnails: false,
+}
+Vue.use(VueImg, vueImgConfig);
 
 Vue.use(VueAnalytics, {
   id: 'UA-103381676-2',

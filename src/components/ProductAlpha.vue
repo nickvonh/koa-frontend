@@ -1,93 +1,57 @@
 <template>
     <div v-if="prodObj" :key="prodId" class="prod-section">
-        <div :class="{addBox:true, 'prod-lock':locked}">
+        <div class="prod-land">
             <div class="prod-head">
                 <h1 class="title">{{prodObj.title}}</h1>
                 <span class="price">${{priceObj.price}} <s v-if="!!priceObj.ogPrice && priceObj.ogPrice !== 'NaN'">${{parseInt(priceObj.ogPrice)}}</s></span>
-                <img :src="lockIcon" @click="back()" class="lockButton"/>
             </div>
-            <ul class="swatches">
-                <li v-for="(color, key) in colors" :key="key" @click="selectColor(color)" :class="{active:isColor(color),color:true}">
-                    <button :class="{active:isColor(color),swatch:true}" :style="{background : findSwatch(color) || 'transparent'}"></button>
-                </li>
-            </ul>
-            <ul class="sizes">
-                <li v-for="size in sizes" :key="size" :class="{active:isSize(size), size:true}">
-                    <button @click="selectSize(size)" class="swatch sizeButton">
-                        {{size}}
-                    </button>
-                </li>
-            </ul>
-            <div v-if="!!selectedSize && !!colorVariants && !!available" :key="1">
-                <button @click="addToCart(JSON.stringify(finalVariant))" :class="{'add-button' : true, adding:adding}">add to cart</button>
-            </div>
-            <div v-if="!!selectedSize && !!colorVariants && !available" :key="1">
-                <button disabled class="add-button sold-out">sold out</button>
-            </div>
-        </div>
-        <transition name="image-transition">
-            <ul class="gallery" ref="gallery">
-                <li v-for="(img, key) in currentImages" :key="img.src">
-                    <img class="thumbnail" :src="img.src" @click="imgFunc(key)"/>
-                </li>
-            </ul>
-        </transition>
-        <span class="current-color">{{color}}</span>
-        <div class="prod-details">
-            
-
-            <div class="profile">
-                <h4 class="mini-header">Details</h4>
-                <hr>
-                <div class="description" v-html="prodObj.descriptionHtml"></div>
-                <span class="wearing" v-if="modelInfo">{{modelInfo.value}}</span>
-            </div>
-            
-            <div class="profile">
-                <h4 class="mini-header">Material Profile</h4>
-                <hr>
-                <h5>
-                    {{fabric.name}}
-                    <router-link :to="`/about/fabrics/${fabric.name.toLowerCase().replace(' ','-')}`">learn more</router-link>
-                </h5>
-                <p class="fabric" v-if="fabric" v-html="fabric.details.tagLine"></p>
-                <h5>Fabric Traits</h5>
-                <ul v-if="detailsArr" class="attributes">
-                    <li v-for="(each, key) in fabric.details.traits" :key="key">
-                        <img :src="each.icon" class="attribute-icon"/>
-                        <span>{{each.display}}</span>
+            <img class="prod-hero" v-lazy="exImages[0]" />
+            <div class="interface">
+                <ul class="swatches">
+                    <li v-for="(color, key) in colors" :key="key" @click="selectColor(color)" :class="{active:isColor(color),color:true}">
+                        <button :class="{active:isColor(color),swatch:true}" :style="{background : findSwatch(color) || 'transparent'}"></button>
                     </li>
                 </ul>
-            </div>
-        </div>
-        <div class="reviews" v-if="reviews">
-            <h4 class="mini-header">Reviews</h4>
-            <hr>
-            <div class="review" v-for="(each,key) in reviews" :key="key">
-                <star-rating 
-                    :rating="each.rating"
-                    :star-size="20"
-                    :read-only="true"
-                    text-class="rating-text"></star-rating>
-                <p class="body">{{each.body}}</p>
-                <div class="foot">
-                    <p>{{each.user}}</p>
-                     <span>{{shortDate(each.date)}}</span>
+                <ul class="sizes">
+                    <li v-for="size in sizes" :key="size" :class="{active:isSize(size), size:true}">
+                        <button @click="selectSize(size)" class="swatch sizeButton">
+                            {{size}}
+                        </button>
+                    </li>
+                </ul>
+                <div v-if="!!selectedSize && !!colorVariants && !!available" :key="1">
+                    <button @click="addToCart(JSON.stringify(finalVariant))" :class="{'add-button' : true, adding:adding}">add to cart</button>
                 </div>
-               
+                <div v-if="!!selectedSize && !!colorVariants && !available" :key="1">
+                    <button disabled class="add-button sold-out">sold out</button>
+                </div>
+                <div class="prod-details">
+                    <div class="profile">
+                        <h4 class="mini-header">Details</h4>
+                        <hr>
+                        <div class="description" v-html="prodObj.descriptionHtml"></div>
+                        <span class="wearing" v-if="modelInfo">{{modelInfo.value}}</span>
+                    </div>
+
+                    <div class="profile">
+                        <h4 class="mini-header">Material Profile</h4>
+                        <hr>
+                        <h5>
+                            {{fabric.name}}
+                            <router-link :to="`/about/fabrics/${fabric.name.toLowerCase().replace(' ','-')}`">learn more</router-link>
+                        </h5>
+                        <p class="fabric" v-if="fabric" v-html="fabric.details.tagLine"></p>
+                        <h5>Fabric Traits</h5>
+                        <ul v-if="detailsArr" class="attributes">
+                            <li v-for="(each, key) in fabric.details.traits" :key="key">
+                                <img :src="each.icon" class="attribute-icon"/>
+                                <span>{{each.display}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="igFeed" v-if="!!igProdImages && igProdImages.length > 0">
-            <h4 class="mini-header">Koa in the real world</h4>
-            <h6>#TeamKoa #ActiveEveryDay</h6>
-            <hr>
-            <ul class="gallery" ref="gallery">
-                <li v-for="(img, key) in igProdImages" :key="key">
-                    <img class="thumbnail" :src="img.images.standard_resolution.url" @click="igFunc(img)"/>
-                </li>
-            </ul>
-        </div>
-        <router-view :images="currentImages" :prodObj="prodObj"></router-view>
     </div>
 </template>
 <script>
@@ -108,6 +72,10 @@ import fabrics from '@/resources/fabrics.js'
 import reviews from '@/resources/reviews'
 import StarRating from 'vue-star-rating'
 import axios from 'axios'
+import exFull from '@/assets/images/mock-photos/full.jpg'
+import exFront from '@/assets/images/mock-photos/front.jpg'
+import exFrontTwo from '@/assets/images/mock-photos/front_2.jpg'
+import exBack from '@/assets/images/mock-photos/back.jpg'
 
 export default {
     name: 'prod-page',
@@ -133,6 +101,7 @@ export default {
             review_data = false
         }
         return {
+            exImages: [exFull, exFront, exBack, exFrontTwo],
             swatches : swatches.swatches,
             pause: false,
             locked: false,
@@ -203,6 +172,16 @@ export default {
         }
     },
     computed : {
+        reviewAvg(){
+            if(this.reviews){
+                let sum = 0;
+                this.reviews.forEach(n => sum += n.rating)
+                return {
+                    avg: sum / this.reviews.length,
+                    count: this.reviews.length
+                }
+            }
+        },
         fabric(){
             if(!!this.tags){
                 let tag = this.tags.find(tag => {
@@ -327,36 +306,26 @@ export default {
                 return this.modelIndex.find(model => model.name === name)
             }
         },
-        reviewAvg(){
-            if(this.reviews){
-                let sum = 0;
-                this.reviews.forEach(n => sum += n.rating)
-                return {
-                    avg: sum / this.reviews.length,
-                    count: this.reviews.length
+        schema(){
+            if(!!this.currentImages){
+                const schema = {
+                "@context": "http://schema.org/",
+                "@type": "Product",
+                "name": this.prodObj.title,
+                "image": this.currentImages.map(n => n.src),
+                "description": this.prodObj.description,
+                "brand": {
+                    "@type": "Thing",
+                    "name": "Koa"
+                },
+                "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": this.reviewAvg.avg,
+                    "reviewCount": this.reviewAvg.count
                 }
             }
-        },
-        schema(){
-            if(this.currentImages){
-                const schema = {
-                    "@context": "http://schema.org/",
-                    "@type": "Product",
-                    "name": this.prodObj.title,
-                    "image": this.currentImages.map(n => n.src),
-                    "description": this.prodObj.description,
-                    "brand": {
-                        "@type": "Thing",
-                        "name": "Koa"
-                    },
-                    "aggregateRating": {
-                        "@type": "AggregateRating",
-                        "ratingValue": this.reviewAvg.avg,
-                        "reviewCount": this.reviewAvg.count
-                    }
-                }
 
-                return JSON.stringify(schema)
+            return JSON.stringify(schema)
             }
         }
     },
@@ -452,42 +421,13 @@ export default {
             })
             Events.Bus.$emit('addToCart', variant)
         },
-        async preloadImages() {
-            if(this.allImages){
-
-                function loadImage(src) {
-                    return new Promise(function(resolve, reject) {
-                        var img = new Image();
-                        img.onload = function() {
-                            resolve(img);
-                        };
-                        img.onerror = img.onabort = function() {
-                            reject(src);
-                        };
-                        img.src = src;
-                    });
-                }
-
-                let srcs = this.allImages;
-                
-                var results = [];
-                
-                for (var i = 0; i < srcs.length; i++) {
-                    let img = await loadImage(srcs[i])
-                    results.push(img);
-                }
-
-                return results
-            }  
-        }
+        
     },
     async mounted(){
         let that = this;
         if(window.innerWidth < 800){
             document.addEventListener('scroll', this.listener, false)
         } 
-        this.preloadImages()
-
 
 
         let product = await this.$apollo.query({
@@ -536,7 +476,6 @@ export default {
                 that.igFeed = arr
             }
         }
-
     },
     metaInfo() {
         return {
@@ -547,306 +486,51 @@ export default {
                 }
             ]
         }
-    }
+    },
 }
 
 </script>
 <style lang="stylus">
-
-@keyframes add  
-    0%
-      transform scale(1)
-      filter brightness(1)
-    50%
-      transform scale(1.025)
-      filter brightness(1.3)
-    100% 
-      transform scale(1)
-      filter brightness(1)
-@keyframes slide
-    from
-        height 0px
-    to
-        height 100%
-.prod-section
-    .current-color
-        font-size .7em
-    .attributes
-        li
-            display flex
-            align-items center
-            justify-content center
-            margin 0
-            margin-bottom 10px
-            width 100%
-            .attribute-icon
-                width 25px
-                margin-right 10px
-            span
-                font-size .75em
-                font-weight 500
-                color rgba(70,80,70, 1)
-    .mini-header
-        color #8084aa
-        font-size .85em
-        margin 4px 0
-    .profile
-        margin-top 30px
-        p
-            margin 15px 0
-            font-size .8em
-            font-weight 500
-        .wearing,.fabric
-            font-weight 500
-            font-size .75em
-        h5
-            margin-bottom 5px
-            a
-                font-size .6em
-                margin-left 15px
-    .prod-lock
-        .add-button
-            padding 10px
-            margin-bottom 10px
-    .add-button
-        background #56a79f
-        border none
-        border-radius 5px
-        padding 10px
-        color white
-        font-weight bold
-        cursor pointer
-        margin-top 5px
-        animation slide .5s ease
-        &:focus
-            outline none
-        &.adding
-            animation add .6s ease;
-        &.sold-out
-            background gray
-
-    .image-transition-enter
-        opacity 0
-    .image-transition-enter-active
-        animation fadein .2s ease
-    .image-transition-leave-active
-        animation fadein .1s ease reverse
-    .image-transition-enter-to
-        opacity 1
-    .image-transition-leave-to
-        opacity 0
-
-
-    @keyframes fadein 
-        from 
-            opacity 0
-        to
-            opacity 1
-    .lockButton
-        display none
-    .prod-head
-        display flex
-        flex-direction row
-        justify-content center
-        align-items center
-        position relative
-        h1
-            font-size .9em
-    .prodLoop
-        display flex 
-        flex-flow row wrap 
-        justify-content space-around 
-    .prodTile 
+.prod-land
+    display flex
+    height 800px
+    background #f2f2f2
+    text-align left
+    .addBox
+        width 50%
         display flex
         flex-direction column
         justify-content center
-        align-items center
-        width 30%
-        cursor pointer
-    .swatches, .sizes
-        display flex
-        flex-flow row
-        justify-content center
-        align-items center
-        max-width 400px
-        height 30px
-        margin 10px auto
-        transition .3s ease
-        .color,.size
-            flex none
-            width 20px
-            height 20px
-            padding 3px
-            &:hover,&.active
-                    border-radius 50%
-                    box-shadow 0px 0px 0px 2px rgb(125, 125, 125)
-            .swatch
-                border none
-                border-radius 50%
-                width 100%
-                height 100%
-                outline none
-                cursor pointer
-                box-shadow: 0px 0px 1px;
-                padding 0
-    .swatches
-        flex-flow row wrap
-    .wearing
-        color rgba(70,80,70, 1)
-        font-size .8em
-    .prod-details,.reviews
-        max-width 600px
-        margin 50px auto
-    .reviews
-        .review
-            background #f2f2f2
-            padding 20px
-            color #6b6b6b
-            margin-bottom 10px
-            text-align left
-            .body
-                font-size .85em
-            .foot
-                display flex
-                justify-content flex-start
-                align-items center
-                p
-                    margin 0
-                    margin-right 15px
-                    margin-bottom 1px
-                    font-weight 600
-                    font-size .85em
-                span
-                    font-size .75em
-            .rating-text
-                font-weight 900
-                font-size 12px
-                border 1px solid #cfcfcf
-                padding-left 5px
-                padding-right 5px
-                border-radius 5px
-                color #999
-                background #fff
-                margin-left 5px
-                margin-bottom 1px
-                margin-top 0
+    .prod-hero
+        width auto
+        max-height 100%
 
-    .description
-        margin 4% 0 0 0
-        font-size .9em
-        p
-            margin 5px 0
-    .sizes
-        justify-content space-around
-        .size
-            width 35px
-            height 35px
-            display flex
-            .sizeButton
-                background #76738a
-                color white
-                font-weight 600
-                width 35px
-                height 35px
-                font-size .6em
-                
-    .prod-section
-        &.prod-lock
-            padding-top 150px
-    .title
-        transition .2s ease
-        margin 5px 0 0 0
-        font-size .8em
-    .price
-        position absolute
-        top 13px
-        right 13px
-        font-size .75em
-        font-weight 500
-        s
-            color #e66d6d
-    .addBox
-        max-width 500px
-        margin 0 auto
-        &.prod-lock
-            position fixed
-            top 0
-            left 0
+@media screen and (max-width:800px)
+    .prod-land
+        height 100%
+        flex-direction column
+        align-items center
+        .addBox
             width 100%
-            background white
-            padding 0
-            max-width none
-            .title
-                font-size 1em
-            .swatches, .sizes
-                height auto
-                padding 5px 0
-                margin 2px auto
-            .price
-                position absolute
-                top 13px
-                right 13px
-                font-size .75em
-    .igFeed
-        margin 50px 0
-        .gallery
-            justify-content center
-            margin-left 0
-            li:first-child
-                margin-left 0
-            img.thumbnail
-                max-height 320px
-    @media screen and (max-width 800px)
-        .gallery
-            max-width 100%
-            margin-top 50px
-        .igFeed
-            .gallery
-                justify-content flex-start
-    .gallery
-        display flex
-        flex-direction row
-        overflow scroll
-        max-width 95%
-        margin 5px auto
-        margin-top 20px
-        .thumbnail
-            max-width 600px
-            max-height 60vh
-        .prodTile 
-            width 40%
-    .gallery.lock
-        margin-top 150px !important
-    @media screen and (max-width 800px)
-        .title
-            margin 10px 0 6px 0
-            font-size 1.5em
-        .swatches,.sizes
-            width 90%
+            height 50%
+        .prod-hero
+            width 80%
             height auto
-            padding 2.5px 0
-            .color,.size
-                justify-content space-around
-        .sizes
-            width 60%
-        .lockButton
-            display block
-            position absolute
-            top 13px
-            left 17px
-            width .75em
-            z-index 9999
-    @media screen and (max-width 800px)
+        .prod-head
+            display flex
+            flex-direction row
+            justify-content space-between
+            align-items center
+            position relative
+            width 80%
+            .title
+                font-weight 600
+            .price
+                font-weight 900
+                font-size 1.2em
         .prod-details,.reviews,.igFeed
-            margin 12% 6%
+            margin 12% 0%
             text-align left
             h6
                 margin 0
-        .attribute-icon
-            margin-right 15px
-        .attributes
-            li
-                display flex
-                align-items center
-                justify-content flex-start
 </style>

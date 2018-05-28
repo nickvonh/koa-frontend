@@ -1,57 +1,21 @@
 <template>
     <div class="frames">
-        <div class="hero">
+        <div class="hero" :style="{'background-image': `url(${hero})`}">
             <img :src="hero"/>
             <div class="blackout">
-                <h1>Active Every Day</h1>
-                <button @click="shop" class="cta">shop</button>
+                <h1>{{copy}}</h1>
             </div>
         </div>
     </div>
 </template>
 <script>
-import one from '@/assets/step/frame1.png'
-import two from '@/assets/step/frame2.png'
-import three from '@/assets/step/frame3.png'
-import hero from '@/assets/images/hero.jpg'
+
 
 export default {
   name : 'frames',
-  mounted(){
-    let that = this
-    let key = 0;
-    let limit = this.frames.length - 1
-    let direction = 1
-
-    setInterval(()=>{
-        if(key < limit){
-            key = key + 1
-        }else{
-            key = 0
-        }
-        that.key = key
-    },1200)
-  },
+  props: ['hero', 'copy'],
   data () {
       return {
-          frames : [
-              one,
-              two,
-              three,
-              two
-          ],
-          hero : hero,
-          key : 1
-      }
-  },
-  methods : {
-    shop(){
-      this.$router.push({name:'Collection', params:{collection:'all'}})
-    }
-  },
-  computed : {
-      activeFrame (){
-          return this.frames[this.key]
       }
   }
 }
@@ -63,7 +27,6 @@ export default {
     .hero
         max-height 90vh
         width 100%
-        background-image url('../assets/images/hero.jpg')
         background-repeat no-repeat
         background-size 100%
         img
@@ -71,12 +34,13 @@ export default {
             visibility hidden
     @media screen and (max-width 800px)
         img
-            display none
+            width 200%
+            visibility hidden
         .hero
-            height 75vh
+            height 100vh
             width 100%
-            background-size 250%
-            background-position 35% -10%
+            background-size cover
+            background-position 50%
     .blackout
         display flex
         flex-direction column
@@ -87,7 +51,7 @@ export default {
         left 0
         width 100%
         height 100%
-        background rgba(0,0,0,.2)
+        background rgba(0,0,0,.1)
         h1
             color white
             font-size 2em

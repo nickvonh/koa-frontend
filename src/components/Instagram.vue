@@ -1,23 +1,23 @@
 <template>
-  <div class="igFeed" v-if="!!igImages && igImages.length > 0">
+  <div class="igFeed" v-if="!!igFeed && igFeed.length > 0">
             <div class="title-box">
                 <h3>Share with us on Instagram</h3>
                 <h4 class="mini-header">Help us build a community of active women!</h4>
                 <h5>#TeamKoa #ActiveEveryDay</h5>
             </div>
             <ul class="gallery" ref="gallery">
-                <li v-for="(img, key) in igImages" :key="key" @click="igFunc(img)">
+                <li v-for="(img, key) in igFeed" :key="key" @click="igFunc(img)">
                     <div class="overlay">
                         <div>
                             <img :src="heart" class="hearts"/>
-                            <span>{{img.likes.count}}</span>
+                            <span v-if="img.likes.count">{{img.likes.count}}</span>
                         </div>
                         <div>
                             <img :src="comments" class="comments"/>
-                            <span>{{img.comments.count}}</span>
+                            <span v-if="img.comments.count">{{img.comments.count}}</span>
                         </div>
                     </div>
-                    <img class="thumbnail" :src="img.thumbnail_resources[2].src" />
+                    <img class="thumbnail" :src="img.images.standard_resolution.url" />
                 </li>
             </ul>
         </div>
@@ -39,20 +39,38 @@ export default {
         }
     },
     computed : {
-        igImages(){
-            if(this.igFeed){
-                return this.igFeed.user.media.nodes
-            }
-        }
     },
     methods : {
         igFunc(img){
-            window.open(`https://instagram.com/p/${img.code}`, "_blank")
+            window.open(`${img.link}`, "_blank")
         }
     },
     async mounted(){
-        let igFeed = await axios.get('https://www.instagram.com/koa.nyc/?__a=1')
-        this.igFeed = igFeed.data
+        console.log('mounted, starting ig')
+        let that = this;
+        let arr = [];
+        getIg(false)
+
+        async function getIg(next_url){
+            if(!next_url){
+                next_url = 'https://api.instagram.com/v1/users/self/media/recent?access_token=5348547313.1677ed0.db5082304bfb4a3db29e25e4fa9d4ed4'
+            }
+
+            let igFeed;
+            try{
+                igFeed = await axios.get(next_url)
+            }catch(e){
+                console.warn(e)
+            }
+                
+            arr = arr.concat(igFeed.data.data);
+
+            if(!!igFeed.data.pagination.next_url){
+                getIg(igFeed.data.pagination.next_url)
+            }else{
+                that.igFeed = arr
+            }
+        }
     }
 }
 </script>
@@ -91,7 +109,7 @@ export default {
                 top 0
                 left 0
                 width 100%
-                height 98%
+                height 100%
                 background rgba(0,0,0,.4)
                 color white
                 display flex
@@ -111,8 +129,9 @@ export default {
             &:hover
                 .overlay
                     visibility visible
+                    cursor pointer
         img.thumbnail
-             max-width 280px
+             max-height 320px
 @media screen and (max-width 800px)
     .gallery
         max-width 100%

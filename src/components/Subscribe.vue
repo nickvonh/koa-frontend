@@ -19,26 +19,8 @@
                 <div class="clear"><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
                 </div>
             </form>
-            <div class="influencer-box" v-else>
-                <div class="influencer-field-group" v-if="!applied">
-                    <h2>Referal code</h2>
-                    <h5>Input your code here and we'll match it!</h5>
-                    <input type="text"  class="required email" v-model="influencerCode">
-                </div>
-                <div class="result" v-if="!!igMatch.user">
-                    <div>
-                        <div class="thumb">
-                            <img :src="igMatch.user.user.profile_pic_url_hd" />
-                        </div>
-                    </div>
-                    <div>
-                        <h3>@{{igMatch.user.user.username}}</h3>
-                        <button v-if="!applied"@click="applyCode">Apply this code</button>
-                        <button v-else disabled class="applied">Code Applied!</button>
-                    </div>
-                </div>
-            </div>
-            <a class="influencer-link" @click="influencer = true" v-if="!influencer">apply an influencer code.</a>
+            <influencer-code v-else></influencer-code>
+            <a class="influencer-link" @click="influencer = true" v-if="!influencer">already have a code?</a>
             <a class="subscribe-link" @click="influencer = false" v-else>subscribe to newsletter.</a>
         </div>
         <div v-else>
@@ -50,26 +32,20 @@
 </template>
 <script>
 import Events from './Bus.js'
-import influencers from '@/resources/influencers.json'
-import axios from 'axios'
+import InfluencerCode from './InfluencerCode.vue'
 
 export default {
     name : 'subscribe',
+    components : {InfluencerCode},
     data (){
         return {
             existingCoupon: false,
             active: false,
             success: false,
             triggered: false,
-            influencerList: influencers,
-            influencer: false,
-            influencerCode: '',
-            igMatch: {
-                user: false,
-                code: false
-            },
             discount: 15,
-            applied: false
+            applied: false,
+            influencer: false
         }
     },
     methods : {
@@ -80,36 +56,6 @@ export default {
             }
 
             this.active = !this.active
-        },
-        applyCode(){
-            let code = this.igMatch.code
-            if(!!code){
-                Events.Bus.$emit('addCouponCode', code)
-                this.applied = true
-                localStorage.subscribed = 'true'
-            }else{
-                console.warn(`error, no code`)
-            }
-        }
-    },
-    watch : {
-        async influencerCode(val) {
-            let influencer = this.influencerList.find(response => {
-                let test = val.toLowerCase()
-                return response.code.toLowerCase() === test
-            })
-            if(!!influencer){
-                console.log(influencer.ig)
-                let user = await axios.get(`https://www.instagram.com/${influencer.ig}/?__a=1`)
-                if(!!user){
-                    this.igMatch = {
-                        code: influencer.code,
-                        user: user.data
-                    }
-                    this.discount = 20
-                }
-                
-            }
         }
     },
     mounted(){
@@ -131,6 +77,13 @@ export default {
                 })
                 Events.Bus.$emit('addCouponCode', 'tryouts')
                 localStorage.subscribed = 'true'
+            }
+        })
+
+        document.addEventListener('checkCoupon', (event) => {
+            console.log('checkCoupon')
+            if(this.$route.name === 'Partner' || !!localStorage.coupon || !!localStorage.subscribed){
+                this.existingCoupon = true
             }
         })
     }
@@ -200,78 +153,6 @@ export default {
         animation none
     &.registered
         animation none
-.influencer-box
-    width 100%
-    height 100%
-    display flex
-    align-items center
-    .influencer-field-group
-        text-align left
-        width 40%
-        transition .3s ease
-        input
-            font-size 1.5em
-            padding 5px
-    .result
-        width 100%
-        display flex 
-        justify-content space-around
-        align-items center
-        div
-            button
-                font-size .85em
-                font-weight 600
-                background #56a79f
-                width 100%
-                max-width 200px
-                height 40px
-                border none
-                border-radius 2px
-                color white
-                cursor pointer
-                &.applied
-                    background gray
-                    cursor initial
-        .thumb
-            margin 0 auto
-            width 120px
-            height 120px
-            border-radius 50%
-            border 1px solid transparent
-            overflow hidden
-            display flex
-            justify-content center
-            align-items center
-            img
-                max-width 100%
-@media screen and (max-width 800px)
-    .influencer-box
-        margin 0 auto
-        width 90%
-        height 100%
-        display flex
-        justify-content center
-        align-items center
-        h2, h3, h5
-            margin-top 0
-        .influencer-field-group
-            text-align left
-            width 80%
-            transition .3s ease
-            input
-                font-size 1em
-                padding 5px
-        .result
-            width 100%
-            display flex 
-            flex-direction column
-            justify-content space-around
-            align-items center
-            .thumb
-                width 60px
-                height 60px
-                border-radius 50%
-
 @media screen and (min-width: 800px)
     .subscribe
         background rgba(0,0,0,0.7)

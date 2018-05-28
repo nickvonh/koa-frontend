@@ -51,8 +51,7 @@ export default {
     },
     methods : {
         selectFabric(fabric){
-
-            this.$router.push({path:`/fabrics/${fabric.name.toLowerCase().replace(' ','-')}`})
+            this.$router.push({path:`/about/fabrics/${fabric.name.toLowerCase().replace(' ','-')}`})
         },
         isActive(fabric){
             return this.activeFabric.name === fabric.name

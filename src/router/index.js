@@ -2,12 +2,20 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
 import About from '@/components/About'
+import Blog from '@/components/Blog'
 import Fabrics from '@/components/Fabrics'
 import FabricProfile from '@/components/FabricProfile'
 import ProdLoop from '@/components/ProductLoop'
 import Product from '@/components/Product'
+import ProductAlpha from '@/components/ProductAlpha'
 import FullGallery from '@/components/Gallery'
 import Returns from '@/components/Returns'
+import Influencers from '@/resources/influencers.json'
+
+let codes = Influencers.map(each => {
+  return each.code
+})
+
 
 Vue.use(Router)
 
@@ -20,8 +28,25 @@ export default new Router({
   mode : 'history',
   routes: [
     {
-      path: '/',
+      path: '/:query?',
       name: 'Home',
+      beforeEnter(to, from, next){
+        let regex = new RegExp(`"${to.params.query}"`)
+        let match = regex.test(JSON.stringify(codes))
+        console.log(regex)
+        if(!!match){
+          console.log(to.params.query)
+          next({name:'Partner', params:{code:to.params.query}})
+        }else{
+          if(to.params.query === 'blog'){
+            console.log('loading blog')
+            next({name:'Blog'})
+          }else{
+            console.log('no match')
+            next();
+          }
+        }
+      },
       component: Home
     },
     {
@@ -43,7 +68,21 @@ export default new Router({
           component: Product,
           children: [
             {
-              path: 'gallery',
+              path: 'gallery/:index',
+              name: 'Full-Gallery',
+              props: true,
+              component: FullGallery
+            }
+          ]
+        },
+        {
+          path: ':product/:color/v2',
+          name: 'Product-Alpha',
+          props: true,
+          component: ProductAlpha,
+          children: [
+            {
+              path: 'gallery/:index',
               name: 'Full-Gallery',
               props: true,
               component: FullGallery
@@ -81,36 +120,36 @@ export default new Router({
       ]
     },
     {
-      path: '/about',
+      path: '/blog',
+      name: 'Blog',
+      component: Blog
+    },
+    {
+      path: '/about/us',
       name: 'About',
       component: About
     },
     {
-      path: '/fabrics',
+      path: '/about/fabrics',
       name: 'Fabrics',
       component: Fabrics
     },
     {
-      path: '/fabrics/:fabricName',
+      path: '/about/fabrics/:fabricName',
       name: 'Fabric-Profile',
       component: FabricProfile
     },
     {
-      path: '/returns',
+      path: '/about/returns',
       name: 'Returns',
       component: Returns
     },
     {
-      path: '/yfw',
+      path: '/partners/:code',
       name: 'Partner',
       component: Home
     },
-    {
-      path: '/EMILYAMBER',
-      name: 'Partner',
-      component: Home
-    },
-    {
+    /*{
       path: '/juli20',
       name: 'Partner',
       component: Home
@@ -169,6 +208,6 @@ export default new Router({
       path: '/readystephgo',
       name : 'Partner',
       component: Home
-    }
+    }*/
   ]
 })

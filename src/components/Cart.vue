@@ -16,16 +16,19 @@
             <span>{{product.title}}</span>
             <span>{{product.price}}</span>
           </div>
-          <long-press duration=".6" pressing-text="removing..." action-text="removing.." :on-confirm="removeItem" :value="product.id" class="show  hidden" v-if="product.details">hold to remove</long-press>
+          <button @click="removeItem(product.id, key)" class="show  hidden" v-if="product.details">X</button>
         </li>
       </ul>
-      <div class="details">
+      <div class="details" v-if="!influencer">
         <h4>subtotal : ${{subtotalPrice}}</h4>
+        <a class="influencer-link" @click="influencer = true" v-if="!influencer && !couponCode">have a referrer code?</a>
         <h5 v-if="couponCode">code: {{couponCode}}</h5>
         <button v-show="cart" class="checkout" @click="checkout">checkout</button>
       </div>
+      <influencer-code v-else></influencer-code>
+
+      <a class="close-link" @click="influencer = false" v-if="!!influencer">done</a>
     </div>
-    <user></user>
   </div>
 </template>
 
@@ -34,13 +37,12 @@ import gql from 'graphql-tag'
 import queries from '@/resources/query'
 import bagIcon from '@/assets/bag.png'
 import Events from './Bus.js'
-import LongPress from './LongPress';
-import User from './User'
+import InfluencerCode from './InfluencerCode.vue';
 
 
 export default {
   name: 'Cart',
-  components : {LongPress, User},
+  components : {InfluencerCode},
   data () {
     return {
       cartItems : [],
@@ -49,7 +51,8 @@ export default {
       active: false,
       adding: false,
       userId: null,
-      newCode: false
+      newCode: false,
+      influencer: false
     }
   },
   computed : {
@@ -134,6 +137,7 @@ export default {
       })
 
       if(!existingCart.data.node.completedAt){
+        this.removeCouponCode()
         this.cart = {
           checkout : existingCart.data.node
         }
@@ -151,9 +155,13 @@ export default {
     }
 
     if(this.$route.name === 'Partner'){
-      let code = this.$route.path.match(/\/(.*)/)[1]
-      console.log(code)
-      Events.Bus.$emit('addCouponCode', code)
+      console.log(this.$route.params.code)
+      Events.Bus.$emit('addCouponCode', this.$route.params.code)
+    }
+
+    if(!!this.$route.query.promo){
+      console.log(this.$route.query.promo)
+      Events.Bus.$emit('addCouponCode', this.$route.query.promo)
     }
       
     
@@ -204,21 +212,30 @@ export default {
 
       }
     },
-    async removeItem(product){
-      let prod = this.itemList.find((p) => p.variant.id === product)
-      let index = this.cartItems.indexOf(prod)
-      let checkout = this.cart.checkout.id
+    async removeItem(product, key){
 
-      this.cartItems.splice(index)
+      this.cartItems.splice(key, 1)
       console.log(this.cartItems)
+      console.log('removing variant id: ', product)
+
+      console.log(this.cart.checkout.lineItems.edges)
+      let prod =this.cart.checkout.lineItems.edges.find(p => {
+        return p.node.variant.id === product
+      })
+
+      console.log('cart product matched :', prod)
+
+      let checkout = this.cart.checkout.id
 
       let result = await this.$apollo.mutate({
         mutation: gql(queries.removeFromCart),
         variables: {
-          lineItemIds: [prod.id],
+          lineItemIds: [prod.node.id],
           checkout: checkout
         }
       })
+
+      console.log('result of remove: ',result)
 
       if(!!result.data.checkoutLineItemsRemove.checkout){
         this.cart = result.data.checkoutLineItemsRemove
@@ -310,7 +327,6 @@ export default {
           value : this.couponCode
         });
         url = url + `&discount=${this.couponCode}`
-        this.removeCouponCode()
       }
       
       this.$analytics.fbq.event('InitiateCheckout');
@@ -332,7 +348,6 @@ export default {
       filter brightness(1)
 .cart
   background #e9e9e9
-  padding 10px 0
   position fixed
   bottom -100%
   left 0
@@ -341,6 +356,14 @@ export default {
   transition .4s ease
   z-index 999999
   user-select none
+  .close-link
+    z-index 999999
+    position absolute
+    bottom 10px
+    left 45%
+    right 45%
+  @media screen and (max-width:800px)
+    height 100%
   .exit-box
     position absolute
     top -100%
@@ -391,7 +414,7 @@ export default {
       top initial 
       bottom 30px
       &.active
-        bottom 60%
+        bottom 90%
   h1
     margin 5px 0
 
@@ -399,16 +422,14 @@ export default {
   height 100%
   width 100%
   display flex
-  flex-direction row
+  flex-direction row wrap
   justify-content space-between
 @media screen and (max-width 800px)
   .cart-container
     flex-direction column
   .cart-list
     overflow-x scroll
-    height 65%
 .details
-  height 100%
   display flex
   flex-direction column
   flex 1
@@ -425,33 +446,43 @@ export default {
     color white
 
 .cart-list
-  flex 3
   display flex
-  flex-direction row
-  height 85%
+  flex-flow row wrap
+  align-items center
+  justify-content center
+  margin 0
+  padding 10px
+  flex 2
   .cart-item
     position relative
     display flex
     flex-direction column
     flex none
-    height 100%
     justify-content flex-start
+    background #f2f2f2
+    padding 10px
+    border-radius 5px
+    box-shadow 1px 1px 2px 2px #00000030
+    width 35%
+    padding 10px
+    margin 5px
+    @media screen and (min-width 800px)
+      width 20%
     .hidden
       display none
       &.show
         display block
         position absolute
-        top 50%
-        left 10%
-        width 80%
-        right 10%
+        top -10px
+        left -10px
+        width 25px
+        height 25px
         cursor pointer
         background lighten(#512A28,30%)
-        border-radius 5px
-        padding-top 15px
-        padding-bottom 15px
+        border-radius 50%
         color white
-        font-size 12px
+        font-size 8px
+        font-weight 900
         &.executing
           opacity 1
           background #512A28 !important
@@ -467,10 +498,10 @@ export default {
           border-radius 5px
     .title
       margin 5px 0
-      font-size 16px
+      font-size 12px
     img, div.thumbnail
       height 100%
-      max-height 200px
+      max-height 120px
       cursor pointer
       margin 0 auto
     div.thumbnail
@@ -478,8 +509,8 @@ export default {
     .split
       display flex
       justify-content space-between
-      margin 5px 0
+      margin 5px
       span
-        font-size 12px
+        font-size 10px
 </style>
 

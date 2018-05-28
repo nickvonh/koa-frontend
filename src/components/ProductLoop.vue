@@ -1,10 +1,11 @@
 <template>
 <div>
     <ul class="prodLoop" v-if="!activeProd && !!prodsByCollection" :key="collection">
-        <li v-for="product in prodsByCollection" :key="product.id" class="prodTile" @click="selectProduct(product)">
-            <img :src="product.images.edges[0].node.src" class="thumbnail"></img>
-            <strong class="title-row"><span>{{product.title}}</span><span>${{parseInt(product.variants.edges[0].node.price)}} <s v-if="!!product.variants.edges[0].node.compareAtPrice && product.variants.edges[0].node.compareAtPrice !== 'NaN'">${{parseInt(product.variants.edges[0].node.compareAtPrice)}}</s></span></strong>
-        </li>
+        <prod-tile 
+            v-for="product in prodsByCollection"
+            :product="product"
+            :key="product.id">
+        </prod-tile>
     </ul>
     <router-view v-if="!!selectedProd" :prodId="selectedProd.id"/>
 </div>
@@ -12,10 +13,12 @@
 <script>
 import gql from 'graphql-tag'
 import queries from '@/resources/query'
+import ProdTile from './ProdTile.vue' 
 
 export default {
     name: 'prod-loop',
     props: ['collection', 'products', 'group'],
+    components: { ProdTile },
     data () {
         return {
             
@@ -57,15 +60,6 @@ export default {
         }
     },
     methods :{
-        selectProduct(product){
-            let color = product.variants.edges[0].node.selectedOptions.find(option => option.name === 'Color').value.toLowerCase().replace(/\//g,'-').replace(' ','-')
-            
-            if(!!this.group){
-                this.$router.push({path:this.group+'/'+product.handle+'/'+color, params : {product : product.handle, color : color} })
-            }else{
-                this.$router.push({path:this.collection+'/'+product.handle+'/'+color, params : {product : product.handle, color : color} })
-            }
-        },
         async preloadImages() {
             if(this.allImages){
 
@@ -99,39 +93,15 @@ export default {
 
 </script>
 <style lang="stylus" scoped>
-.slide-down-enter
-    transform translateY(-100%)
-.slide-down-enter-active 
-    transform translateY(0)
-.slide-down-leave-to
-    transform translateY(100%)
 .prodLoop 
     display flex 
     flex-flow row wrap 
     justify-content space-around 
-.prodTile 
-    display flex
-    flex-direction column
-    justify-content center
-    align-items center
-    width 30%
-    cursor pointer
-    font-size .75em
-    font-weight 300
-.thumbnail 
-    max-width 360px
-    max-height 70vh
-    margin 10px 0
-.title-row
-    width 100%
-    max-width 360px
-    display flex
-    justify-content space-around
-    s
-        color #e66d6d
 
-@media screen and (max-width 800px)
-    .prodTile 
-        width 90%
-        margin 10px 0
+
+@media screen and (max-width 1024px)
+    .prodLoop
+        margin-top 0
+        flex-direction column 
+        align-items center
 </style>

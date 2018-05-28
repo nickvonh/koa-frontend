@@ -1,21 +1,11 @@
 <template>
   <div id="app">
-    <message-bar></message-bar>
-    <div :class="{shrink : true, header : true}">
+    <div :class="{shrink : true, header : true, stick:notTop}">
       <router-link to="/"><img src="./assets/logo.svg"  class="logo"></router-link>
-      <div v-if="collections">
-        <ul>
-          <li v-for="(collection,key) in collections" :key="key" class="nav-item">
-            <button @click="selectCollection(collection)" class="links">
-              {{collection.title}}
-            </button>
-          </li>
-        </ul>
-      </div>
-      <div v-else>
-        <img src="./assets/spinner.svg"/>
-      </div>
+      <top-bar v-if="collections" :collections="collections">
+      </top-bar>
     </div>
+    <message-bar></message-bar>
     <transition name="">
       <router-view :products="products" :class="{view : true, padTop : !isHome}"/>
     </transition>
@@ -30,12 +20,13 @@ import gql from 'graphql-tag'
 import queries from './resources/query'
 import Cart from './components/Cart'
 import MessageBar from './components/MessageBar'
+import TopBar from './components/TopBar'
 import Subscribe from './components/Subscribe'
 import SiteFooter from './components/SiteFooter'
 
 export default {
   name: 'app',
-  components: {Cart,MessageBar, Subscribe, SiteFooter},
+  components: {Cart, TopBar, MessageBar, Subscribe, SiteFooter},
   apollo: {
     shop : {
       query: gql(queries.rootQuery),
@@ -76,13 +67,8 @@ export default {
   data () {
     return {
       activeCollection : null,
-      shop : null
-    }
-  },
-  methods : {
-    selectCollection(collection){
-      this.activeCollection = collection.handle
-      this.$router.push({name: 'Collection', params: {collection : collection.handle}})
+      shop : null,
+      notTop: false
     }
   },
   mounted(){
@@ -107,6 +93,11 @@ export default {
     
     this.$analytics.fbq.init(ID)
     this.$analytics.fbq.event('PageView')
+
+
+    window.onscroll = ()=>{
+      this.notTop = window.scrollY !== 0 && this.$route.name !== 'Product-Color'
+    }
   }
 }
 </script>
@@ -148,24 +139,27 @@ body
     flex-direction column
     align-items center
     justify-content flex-start
-    ul
-      width 100%
-      margin 5px 0 10px 0
-    .nav-item
-      cursor pointer
-      margin 0
     .links
       padding 0
       margin 0 10px
     .logo
       margin 10px 0
-    img
       height 15px
       width auto
     .tagLine
       display none
     .logo
       max-width 100px
+@media screen and (max-width 800px)
+  .header
+    &.stick
+      position fixed
+      top 0
+      left 0
+      width 100%
+      height 40px
+      z-index 99999999999999999999
+
 .logo
   width 50%
   max-width 200px
@@ -188,4 +182,17 @@ a
     color lighten(#53577c, 50%)
   img.social
     height 20px
+
+img[lazy]
+  transition .3s ease
+
+img[lazy="loading"]
+  opacity 0
+  transform translateX(10%)
+
+img[lazy="loaded"]
+  opacity 1
+  transform translateX(0)
+
+
 </style>

@@ -39,6 +39,7 @@ export default {
                         }
                     }
                 }
+                description
                 descriptionHtml
                 images (first:50){
                     edges{
@@ -82,6 +83,11 @@ export default {
                         handle
                         title
                         tags
+                        options (first:3){
+                            id
+                            name
+                            values
+                        }
                         collections (first:100){
                             edges{
                                 node{
@@ -91,7 +97,7 @@ export default {
                                 }
                             }
                         }
-                        images (first:1){
+                        images (first:100){
                             edges{
                                 node{
                                     altText
@@ -99,7 +105,7 @@ export default {
                                 }
                             }
                         }
-                        variants (first: 1){
+                        variants (first: 20){
                             edges{
                                 node{
                                     id
@@ -233,7 +239,7 @@ export default {
                 webUrl
                 subtotalPrice
                 totalPrice
-                lineItems(first: 5) {
+                lineItems(first: 100) {
                     edges {
                         node {
                             title
