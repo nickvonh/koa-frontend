@@ -1,17 +1,7 @@
 <template>
   <div id="app">
-    <div :class="{shrink : true, header : true, stick:notTop}">
-      <router-link to="/"><img src="./assets/logo.svg"  class="logo"></router-link>
-      <top-bar v-if="collections" :collections="collections">
-      </top-bar>
-    </div>
-    <message-bar></message-bar>
-    <transition name="">
-      <router-view :products="products" :class="{view : true, padTop : !isHome}"/>
-    </transition>
     <cart></cart>
-    <subscribe></subscribe>
-    <site-footer></site-footer>
+    <router-view :products="products" :class="{view : true, padTop : !isHome}"/>
   </div>
 </template>
 
@@ -23,10 +13,11 @@ import MessageBar from './components/MessageBar'
 import TopBar from './components/TopBar'
 import Subscribe from './components/Subscribe'
 import SiteFooter from './components/SiteFooter'
+import MobNav from './components/MobNav'
 
 export default {
   name: 'app',
-  components: {Cart, TopBar, MessageBar, Subscribe, SiteFooter},
+  components: {Cart, TopBar, MessageBar, Subscribe, SiteFooter, MobNav},
   apollo: {
     shop : {
       query: gql(queries.rootQuery),
@@ -127,6 +118,7 @@ body
   -moz-osx-font-smoothing grayscale
   text-align center
   color #2c3e50
+  position relative
 .view.padTop
   margin-top 0
 .header
@@ -184,7 +176,8 @@ a
     height 20px
 
 img[lazy]
-  transition .3s ease
+  transition .3s ease transform opacity
+  transition-delay .2s
 
 img[lazy="loading"]
   opacity 0
@@ -194,5 +187,13 @@ img[lazy="loaded"]
   opacity 1
   transform translateX(0)
 
+div[lazy]
+  transition .3s ease
+  transition-delay .2s
 
+div[lazy="loading"]
+  background-position-x 20px
+
+div[lazy="loaded"]
+  background-position-x 0
 </style>

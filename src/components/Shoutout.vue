@@ -1,12 +1,6 @@
 <template>
-    <div class="shoutout">
-      <img v-lazy="image"/>
-      <div class="copy">
-        <h3>{{headline}}</h3>
-        <h3 v-html="copy"></h3>
-        <button @click="clickFunction" class="cta">learn more</button>
-    </div>
-      
+    <div :class="[color, {shoutout:true}]" v-lazy:background-image="image" @click="clickFunction">
+        <h3>{{cta}}</h3>
     </div>
 </template>
 <script>
@@ -14,7 +8,7 @@
 
 export default {
   name : 'shoutout',
-  props: ['headline', 'copy', 'image', 'clickFunction'],
+  props: ['cta', 'image', 'color', 'clickFunction'],
   data () {
       return {
       }
@@ -22,44 +16,30 @@ export default {
 }
 </script>
 <style lang="stylus">
+.ash
+    background-color #D9D6D6
+.cream
+    background-color #F4F2EC
+.mint
+    background-color #ECF2F4
 .shoutout
-    text-align center
-    font-size 1em
-    font-weight 500
-    position relative
-    width 50%
-    .copy
-        position absolute
-        top 20%
-        left 5%
-        width 90%
-        right 5%
-        text-align left
-        h3
-            margin-top 0
-            font-size 3.8em
-            color rgba(185,215,215,.95)
-        .cta
-            font-size 1.2em
-            letter-spacing .1rem
-            font-weight 800
-            width 100%
-            height 40px
-            border none 
-            color #f2f2f2
-            cursor pointer
-            text-transform uppercase
-            background #bbbbd9
-            margin-bottom 30px
-    &:nth-child(odd)
-        .copy
-            h3
-                color #bbbbd9
-            .cta
-                background rgba(185,215,215,.95)
-    img 
-        max-width 90%
+    width 30%
+    height calc(400px - 2.5%)
+    background-size contain
+    background-repeat no-repeat
+    height 40vh
+    cursor pointer
+    h3
+        font-size 2em
+        transform translateY(-175%)
+
 @media screen and (max-width 800px)
     .shoutout
+        height 50vh
         width 100%
+        padding 0
+        margin 15% 0
+        h3
+            font-size 1.5em
+            transform translateY(-175%)
 </style>

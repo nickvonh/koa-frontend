@@ -1,11 +1,11 @@
 <template>
 <div>
     <ul class="prodLoop" v-if="!activeProd && !!prodsByCollection" :key="collection">
-        <prod-tile 
-            v-for="product in prodsByCollection"
-            :product="product"
-            :key="product.id">
-        </prod-tile>
+            <prod-tile 
+                v-for="product in prodsByCollection"
+                :product="product"
+                :key="product.id">
+            </prod-tile>
     </ul>
     <router-view v-if="!!selectedProd" :prodId="selectedProd.id"/>
 </div>

@@ -1,65 +1,88 @@
 <template>
     <div v-if="prodObj" :key="prodId" class="prod-section">
-        <div class="prod-land">
-            <div class="prod-head">
+        <div class="prod-land" v-if="currentImages">
+
+            <div class="prod-head" v-if="!isDesktop">
                 <h1 class="title">{{prodObj.title}}</h1>
                 <span class="price">${{priceObj.price}} <s v-if="!!priceObj.ogPrice && priceObj.ogPrice !== 'NaN'">${{parseInt(priceObj.ogPrice)}}</s></span>
             </div>
-            <img class="prod-hero" v-lazy="exImages[0]" />
-            <div class="interface">
+
+            <carousel ref="carousel"
+            :perPage="1"
+            :loop="false"
+            :minSwipeDistance="10"
+            paginationActiveColor="#2c3e50"
+            paginationColor="#ffffff"
+            :class="{'prod-hero':true, 'details': moreDetails, 'full': fullGallery}">
+                <slide v-for="(each,index) in currentImages" class="thumb-slide" :key="index">
+                    <img :src="each.src" @click="imgFunc"/>
+                </slide>
+            </carousel>
+
+            <div class="interface" v-show="!fullGallery">
+                <div class="prod-head" v-if="isDesktop">
+                    <h1 class="title">{{prodObj.title}}</h1>
+                    <span class="price">${{priceObj.price}} <s v-if="!!priceObj.ogPrice && priceObj.ogPrice !== 'NaN'">${{parseInt(priceObj.ogPrice)}}</s></span>
+                </div>
+                <product-details :active="moreDetails" 
+                    :activate="()=>{moreDetails = true}" 
+                    :deactivate="()=>{moreDetails = false}"
+                    :product="prodObj"
+                    :isDesktop="isDesktop"
+                    :fabric="fabric"
+                    :modelInfo="modelInfo.value">
+                </product-details>
+
                 <ul class="swatches">
                     <li v-for="(color, key) in colors" :key="key" @click="selectColor(color)" :class="{active:isColor(color),color:true}">
-                        <button :class="{active:isColor(color),swatch:true}" :style="{background : findSwatch(color) || 'transparent'}"></button>
+                        <div :class="{active:isColor(color),swatch:true}" :style="{background : findSwatch(color) || 'transparent'}"></div>
                     </li>
                 </ul>
                 <ul class="sizes">
                     <li v-for="size in sizes" :key="size" :class="{active:isSize(size), size:true}">
-                        <button @click="selectSize(size)" class="swatch sizeButton">
+                        <div @click="selectSize(size)" class="sizeButton">
                             {{size}}
-                        </button>
+                        </div>
                     </li>
                 </ul>
-                <div v-if="!!selectedSize && !!colorVariants && !!available" :key="1">
-                    <button @click="addToCart(JSON.stringify(finalVariant))" :class="{'add-button' : true, adding:adding}">add to cart</button>
+                <div :key="1" class="add">
+                    <button @click="!!selectedSize && !!colorVariants && !!available ? addToCart(JSON.stringify(finalVariant)) : null" :class="{'add-button' : true, adding:adding}">add to cart</button>
                 </div>
-                <div v-if="!!selectedSize && !!colorVariants && !available" :key="1">
+                <div v-if="!!selectedSize && !!colorVariants && !available" :key="1" class="add">
                     <button disabled class="add-button sold-out">sold out</button>
                 </div>
-                <div class="prod-details">
-                    <div class="profile">
-                        <h4 class="mini-header">Details</h4>
-                        <hr>
-                        <div class="description" v-html="prodObj.descriptionHtml"></div>
-                        <span class="wearing" v-if="modelInfo">{{modelInfo.value}}</span>
-                    </div>
-
-                    <div class="profile">
-                        <h4 class="mini-header">Material Profile</h4>
-                        <hr>
-                        <h5>
-                            {{fabric.name}}
-                            <router-link :to="`/about/fabrics/${fabric.name.toLowerCase().replace(' ','-')}`">learn more</router-link>
-                        </h5>
-                        <p class="fabric" v-if="fabric" v-html="fabric.details.tagLine"></p>
-                        <h5>Fabric Traits</h5>
-                        <ul v-if="detailsArr" class="attributes">
-                            <li v-for="(each, key) in fabric.details.traits" :key="key">
-                                <img :src="each.icon" class="attribute-icon"/>
-                                <span>{{each.display}}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                
             </div>
+            <!-- <div class="prod-details">
+                <div class="profile">
+                    <div class="description" v-html="prodObj.descriptionHtml"></div>
+                    <span class="wearing" v-if="modelInfo">{{modelInfo.value}}</span>
+                </div>
+
+                <div class="profile">
+                    <h4 class="mini-header">Material Profile</h4>
+                    <hr>
+                    <h5>
+                        {{fabric.name}}
+                        <router-link :to="`/about/fabrics/${fabric.name.toLowerCase().replace(' ','-')}`">learn more</router-link>
+                    </h5>
+                    <p class="fabric" v-if="fabric" v-html="fabric.details.tagLine"></p>
+                    <h5>Fabric Traits</h5>
+                    <ul v-if="detailsArr" class="attributes">
+                        <li v-for="(each, key) in fabric.details.traits" :key="key">
+                            <img :src="each.icon" class="attribute-icon"/>
+                            <span>{{each.display}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div> -->
         </div>
     </div>
 </template>
 <script>
-import Swipe from '@/resources/swipe'
 import gql from 'graphql-tag'
 import queries from '@/resources/query'
 import swatches from '@/resources/swatches'
-import expand from '@/assets/expand.svg'
 import back from '@/assets/back.svg'
 import Events from './Bus.js'
 import brushed from '@/assets/brushed.svg'
@@ -72,15 +95,17 @@ import fabrics from '@/resources/fabrics.js'
 import reviews from '@/resources/reviews'
 import StarRating from 'vue-star-rating'
 import axios from 'axios'
-import exFull from '@/assets/images/mock-photos/full.jpg'
+import exFull from '@/assets/images/mock-photos/tage.webp'
 import exFront from '@/assets/images/mock-photos/front.jpg'
 import exFrontTwo from '@/assets/images/mock-photos/front_2.jpg'
 import exBack from '@/assets/images/mock-photos/back.jpg'
+import ProductDetails from './ProductDetails.vue'
+import {Carousel, Slide} from 'vue-carousel'
 
 export default {
     name: 'prod-page',
     props: ['product', 'prodId', 'color'],
-    components : {StarRating},
+    components : {StarRating, ProductDetails, Carousel, Slide},
     beforeDestroy(){
         document.removeEventListener('scroll', this.listener, false)
     },
@@ -114,6 +139,8 @@ export default {
             reviews: review_data,
             igFeed: null,
             fabrics: fabrics.fabrics,
+            windowWidth: window.outerWidth,
+            moreDetails: false,
             modelIndex: [
                 {
                     name: 'serena',
@@ -172,8 +199,11 @@ export default {
         }
     },
     computed : {
+        isDesktop(){
+            return this.windowWidth > 800
+        },
         reviewAvg(){
-            if(this.reviews){
+            if(!!this.reviews){
                 let sum = 0;
                 this.reviews.forEach(n => sum += n.rating)
                 return {
@@ -301,7 +331,7 @@ export default {
             }
         },
         modelInfo(){
-            if(!!this.currentImages.length > 0){
+            if(this.currentImages.length > 0){
                 let name = this.currentImages[0].altText.match(/model\-([a-z]+)/)[1]
                 return this.modelIndex.find(model => model.name === name)
             }
@@ -309,21 +339,23 @@ export default {
         schema(){
             if(!!this.currentImages){
                 const schema = {
-                "@context": "http://schema.org/",
-                "@type": "Product",
-                "name": this.prodObj.title,
-                "image": this.currentImages.map(n => n.src),
-                "description": this.prodObj.description,
-                "brand": {
-                    "@type": "Thing",
-                    "name": "Koa"
-                },
-                "aggregateRating": {
-                    "@type": "AggregateRating",
-                    "ratingValue": this.reviewAvg.avg,
-                    "reviewCount": this.reviewAvg.count
+                    "@context": "http://schema.org/",
+                    "@type": "Product",
+                    "name": this.prodObj.title,
+                    "image": this.currentImages.map(n => n.src),
+                    "description": this.prodObj.description,
+                    "brand": {
+                        "@type": "Thing",
+                        "name": "Koa"
+                    }
                 }
-            }
+                if(!!this.reviews){
+                    schema["aggregateRating"]= {
+                        "@type": "AggregateRating",
+                        "ratingValue": this.reviewAvg.avg,
+                        "reviewCount": this.reviewAvg.count
+                    }
+                }
 
             return JSON.stringify(schema)
             }
@@ -357,18 +389,15 @@ export default {
             }
             
         },
-        imgFunc(key){
-            console.log(key)
-            this.fullImgKey = key
-            this.$router.push({name : 'Full-Gallery', params : {index : key}})
+        imgFunc(){
+           !this.isDesktop ? this.fullGallery = !this.fullGallery : null
         },
         igFunc(img){
             window.open(`https://instagram.com/p/${img.shortcode}`, "_blank")
         },
         selectColor(color){
             color = color.toLowerCase().replace(/\//g,'-').replace(' ','-')
-            this.$router.replace({path : color, params: {product: this.product, color: color}})
-            this.$refs.gallery.scrollLeft = 0;
+            this.$router.replace({name : 'Product-Alpha', params: {product: this.product, color: color}})
         },
         selectSize(size){
             this.selectedSize = size
@@ -428,6 +457,10 @@ export default {
         if(window.innerWidth < 800){
             document.addEventListener('scroll', this.listener, false)
         } 
+
+        window.onresize = (e)=>{
+            this.windowWidth = window.outerWidth
+        }
 
 
         let product = await this.$apollo.query({
@@ -492,45 +525,173 @@ export default {
 </script>
 <style lang="stylus">
 .prod-land
+    height 100%
+    flex-direction column
+    align-items center
     display flex
-    height 800px
     background #f2f2f2
     text-align left
     .addBox
-        width 50%
         display flex
         flex-direction column
         justify-content center
+        width 100%
+        height 50%
     .prod-hero
-        width auto
-        max-height 100%
-
-@media screen and (max-width:800px)
-    .prod-land
-        height 100%
-        flex-direction column
-        align-items center
-        .addBox
-            width 100%
-            height 50%
-        .prod-hero
-            width 80%
-            height auto
-        .prod-head
+        width 100%
+        height 60vh
+        transition .3s ease
+        &.full
+            height 90vh !important
+        &.details
+            height 42vh
+        .VueCarousel-wrapper
+            height 80%
+            .VueCarousel-inner
+                height 100%
+                .thumb-slide
+                    height 100%
+                    width 100%
+                    img
+                        height 100%
+                        width auto
+        .VueCarousel-pagination
+            height 20%
+        .thumb-slide
             display flex
-            flex-direction row
-            justify-content space-between
+            justify-content center
             align-items center
-            position relative
+    .prod-head
+        display flex
+        flex-direction row
+        justify-content space-between
+        align-items center
+        position relative
+        width 80%
+        .title
+            font-weight 600
+            font-size 1.5em
+        .price
+            font-weight 900
+            font-size 1.1em
+    .interface
+        display flex
+        flex-direction column
+        position fixed
+        background white
+        bottom 0
+        left 0
+        width 100%
+        padding-top 10px
+        .swatches, .sizes
+            display flex
+            justify-content space-around
             width 80%
-            .title
-                font-weight 600
-            .price
-                font-weight 900
-                font-size 1.2em
-        .prod-details,.reviews,.igFeed
-            margin 12% 0%
-            text-align left
-            h6
-                margin 0
+            margin 0 auto
+        .swatches
+            padding 4% 0
+            .color
+                &:after 
+                    content ''
+                    display block
+                    width 0
+                    height 2px
+                    background #2c3e50
+                    transition width .2s
+                &.active
+                    &:after
+                        width 100%
+                    .swatch
+                        margin-bottom 8px
+            .swatch
+                width 15px
+                height 15px
+                border-radius 50%
+                margin 0 3px
+                border 1px solid rgb(120,120,120)
+        .sizes
+            padding 4% 0
+            // display none
+            .size
+                transition .3s ease
+                border-color transparent
+                &:after 
+                    content ''
+                    display block
+                    width 0
+                    height 2px
+                    background #2c3e50
+                    transition width .2s
+                .sizeButton
+                    font-size .8rem
+                    font-weight 700
+                    color grey
+                    margin-bottom 0px
+                    margin 0 5px
+                &.active
+                    &:after
+                        width 100%
+                    .sizeButton
+                        width 100%
+                        background none
+                        color #2c3e50
+                        margin-bottom 5px
+        .add
+            padding 3% 0
+            display flex
+            justify-content center
+            .add-button
+                color rgba(0,0,0,1)
+                border 1px solid black 
+                background none
+                padding 8px 20px
+    .prod-details,.reviews,.igFeed
+        margin 12% 0%
+        text-align left
+        h6
+            margin 0
+@media screen and (min-height 801px) and (max-height 1000px) and (max-width 800px)
+    .prod-land 
+        .prod-hero
+            height 70vh
+            &.details
+                height 50vh
+@media screen and (max-height 600px)  and (max-width 800px)
+    .prod-land 
+        .prod-hero
+            height 50vh
+            &.details
+                height 38vh
+@media screen and (min-width 801px)
+    .prod-land
+        flex-direction row
+        width 100%
+        .prod-hero
+            width 60%
+            height 100vh
+            &.full
+                height 100vh !important
+            &.details
+                height 100vh
+            .VueCarousel-wrapper
+                height 90%
+                .VueCarousel-inner
+                    height 100%
+                    .thumb-slide
+                        height 100%
+                        width 100%
+                        img
+                            height 100%
+                            width auto
+            .VueCarousel-pagination
+                height 10%
+            .thumb-slide
+                display flex
+                justify-content center
+                align-items center
+        .interface
+            width 40%
+            height 100vh
+            position initial
+            align-items center
 </style>

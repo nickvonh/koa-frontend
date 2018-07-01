@@ -1,53 +1,62 @@
 <template>
   <div class="home">
-    <frames :hero="frames.andi" copy="Active Essentials"></frames>
+    <hero :hero="frames.heroImage" :cta="shop"></hero>
+    <!-- <quote :background="frames.tage" copy="stylish gear that fits into your life"></quote> -->
     <div class="shout-box">
-      <shoutout :image="frames.tageKick" headline="show us how you" :copy="`do you`" :clickFunction="goFabrics"></shoutout>
-      <shoutout :image="frames.kikiFull" headline="" :copy="`the best you`" :clickFunction="goFabrics"></shoutout>
+      <h2>check out our curated collections</h2>
+      <div class="shouts">
+        <shoutout :image="frames.midi" :cta="`crop tops`" :clickFunction="goMidi" color="ash"></shoutout>
+        <shoutout :image="frames.leggings" :cta="`leggings`" :clickFunction="goBottoms" color="cream"></shoutout>
+        <shoutout :image="frames.shells" :cta="`shells`" :clickFunction="goOuter" color="mint"></shoutout>
+      </div>
     </div>
-    <frames :hero="frames.kiki" copy="Ready For Anything"></frames>
-    <instagram></instagram>
+    <flexible :hero="frames.flexImg" :cta="goFabrics"></flexible>
   </div>
 </template>
 
+
+
 <script>
 import gql from 'graphql-tag'
-import Frames from './Frames.vue'
+import Hero from './Hero.vue'
+import Quote from './Quote.vue'
 import Shoutout from './Shoutout.vue'
 import Instagram from './Instagram.vue'
-import andi from '@/assets/images/mock-photos/landing/andi.jpg'
-import tage from '@/assets/images/mock-photos/landing/tage.jpg'
-import tageKick from '@/assets/images/mock-photos/landing/tageKick.jpg'
-import kiki from '@/assets/images/mock-photos/front.jpg'
-import kikiFull from '@/assets/images/mock-photos/full.jpg'
+import Flexible from './Flexible.vue'
+import heroImage from '../assets/images/mock-photos/hero.png'
+import flexImg from '@/assets/images/mock-photos/flexible.png'
+import shells from '@/assets/images/mock-photos/landing/shells.png'
+import midi from '@/assets/images/mock-photos/landing/midi.png'
+import leggings from '@/assets/images/mock-photos/landing/leggings.png'
 
 
 export default {
   name: 'Home',
-  components: {Frames, Shoutout, Instagram},
+  components: {Hero, Shoutout, Quote, Instagram, Flexible},
   data () {
     return {
       frames : {
-        andi,
-        tage,
-        tageKick,
-        kiki,
-        kikiFull
-      }
+        heroImage,
+        flexImg,
+        shells,
+        midi,
+        leggings
+      },
+      rotate : 0
     }
   },
   methods : {
     shop(){
       this.$router.push({name:'Collection', params:{collection:'all'}})
     },
-    goBrushed(){
-      this.$router.push({name:'Group', params:{group:'brushed'}})
+    goMidi(){
+      this.$router.push({name:'Group', params:{group:'midi'}})
     },
-    goScuba(){
-      this.$router.push({name:'Group', params:{group:'scuba'}})
+    goOuter(){
+      this.$router.push({name:'Collection', params:{collection:'outer-layers'}})
     },
-    goBreezy(){
-      this.$router.push({name:'Group', params:{group:'breezy'}})
+    goBottoms(){
+      this.$router.push({name:'Collection', params:{collection:'bottoms'}})
     },
     goFabrics(){
       this.$router.push({name:'Fabrics'})
@@ -66,15 +75,33 @@ export default {
   100% 
     background-position 0% 99%
 .home
-  background #f2f2f2
   display flex
   flex-direction column
   justify-content center
   align-items center
   margin 0 auto
   .shout-box
+    width 90%
+    text-align left
+    padding 5%
+    min-height 60vh
     display flex
-    flex-flow row wrap
+    flex-flow column
+    color #666666
+    h2
+      font-size 3em
+      font-weight 500
+      margin-bottom 10%
+    .shouts
+      display flex
+      flex-flow row wrap
+      justify-content space-between
+    @media screen and (max-width 800px)
+      h2
+        font-size 1.75em
+        font-weight 500
+      .shouts
+        flex-flow column nowrap
   .VueCarousel
     width 100%
   .VueCarousel-pagination
@@ -89,7 +116,7 @@ export default {
   h3
     margin 10px
     font-size 1.5em
-    font-weight 600
+    font-weight 500
   img
     width 65%
   .hero

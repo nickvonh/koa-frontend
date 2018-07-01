@@ -1,8 +1,6 @@
 <template>
   <div :class="{cart:true, open:active}">
-    <div :class="{'cart-button':true, active:active, adding:adding}" v-if="cartItems.length > 0" @click="active = !active" >
-      <img :src="bagIcon"/>
-      <p class="cart-count">{{totalQty}}</p>
+    <div :class="{'cart-button':true, active:active, adding:adding}" v-if="cartItems.length > 0" @click="active = !active" v-html="!!active ? down : bagIcon">
     </div>
     <div class="exit-box" v-if="active" @click="active = false"></div>
     <div class="cart-container">
@@ -35,7 +33,8 @@
 <script>
 import gql from 'graphql-tag'
 import queries from '@/resources/query'
-import bagIcon from '@/assets/bag.png'
+import bagIcon from '@/assets/shopping-cart.svg'
+import down from '@/assets/down.svg'
 import Events from './Bus.js'
 import InfluencerCode from './InfluencerCode.vue';
 
@@ -52,7 +51,8 @@ export default {
       adding: false,
       userId: null,
       newCode: false,
-      influencer: false
+      influencer: false,
+      down
     }
   },
   computed : {
@@ -104,12 +104,15 @@ export default {
     }
   },
   watch :{
-    totalQty(nu, old){
+    totalQty(nu, old, something){
+      console.log(nu,old, something)
       if(nu === 0){
         this.active = false
-      }else if( old === 0 && nu === 1){
-        this.active = true
       }
+      //else if( old === 0 && nu === 1){
+      //   console.log('watch')
+      //   this.active = true
+      // }
       this.adding = true
       setTimeout(()=>{this.adding = false}, 1500)
     }
@@ -376,45 +379,30 @@ export default {
   &.open
     bottom 0
   .cart-button
-    position fixed
-    top initial
-    right 30px
-    bottom 30px
-    background #8084aa
     border-radius 50%
-    width 30px
-    height 30px
-    padding 10px
+    position fixed
+    bottom 20px
+    right 15px
     z-index 9999999999999999
     cursor pointer
     transition .4s ease
-    box-shadow 0px 1px 3px 3px rgba(100,100,150,.3)
-    &:hover
-      box-shadow 0px 2px 3px 2px rgba(100,100,150,.6)
-      background #6c73b7
+    height 18px
+    width 18px
+    svg
+      fill #53577c
     &.active
-      background #3c73b7
-      bottom 60%
+      svg
+        fill red
     &.adding
       animation add .6s ease;
     img
-      max-width 100%
-      filter invert(1)
+      width 15px
     .cart-count
-      position absolute
-      top 7px
-      left 0px
       width 100%
       text-align center
-      color white
       font-weight bold
-      font-size 14px
-  @media screen and (max-width 800px)
-    .cart-button
-      top initial 
-      bottom 30px
-      &.active
-        bottom 90%
+      font-size 8px
+      margin 0
   h1
     margin 5px 0
 

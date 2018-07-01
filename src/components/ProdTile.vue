@@ -3,6 +3,7 @@
             <carousel ref="carousel"
             :perPage="1"
             :loop="true"
+            :minSwipeDistance="40"
             paginationActiveColor="#2c3e50"
             paginationColor="#ffffff">
                 <slide v-for="(each,index) in currentImages" :key="index">
@@ -28,6 +29,7 @@
 <script>
 import swatches from '@/resources/swatches'
 import {Carousel, Slide} from 'vue-carousel'
+import exFull from '@/assets/images/mock-photos/tage.webp'
 
 export default {
     name: 'prod-tile',
@@ -35,6 +37,7 @@ export default {
     components: {Carousel, Slide},
     data (){
         return {
+            exFull,
             swatches : swatches.swatches,
             colors : this.product.options.find(item => item.name === "Color").values,
             selected : 0
@@ -55,7 +58,9 @@ export default {
         }
     },
     methods: {
-        
+        handler (component) {
+            console.log('this component is showing')
+        },
         isColor(color) {
             color = color.replace('/','-').replace(' ','-')
             let regex = new RegExp(color,'i')
@@ -67,9 +72,9 @@ export default {
             
             console.log(color)
             if(!!this.$route.params.group){
-                this.$router.push({path:this.$route.params.group+'/'+product.handle+'/'+color, params : {product : product.handle, color : color} })
+                this.$router.push({path:this.$route.params.group+'/'+product.handle+'/'+color+'/v2', params : {product : product.handle, color : color} })
             }else{
-                this.$router.push({path:this.$route.params.collection+'/'+product.handle+'/'+color, params : {product : product.handle, color : color} })
+                this.$router.push({path:this.$route.params.collection+'/'+product.handle+'/'+color+'/v2', params : {product : product.handle, color : color} })
             }
         },
         selectColor(color){
@@ -108,7 +113,7 @@ export default {
     border-radius 5px
     .tileThumb 
         width 300px
-        height auto
+        height 450px
     .title-row
         width 100%
         max-width 360px
@@ -154,11 +159,11 @@ export default {
         margin 25px 0
         background #f2f2f2
         .tileThumb 
-            width 300px
-            height auto
+            width 200px
+            height 300px
         .title-row
             padding 10px 0
-            font-size 1.3em
+            font-size 1.1em
             position relative
             justify-content center
         .prices
