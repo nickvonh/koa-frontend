@@ -7,16 +7,14 @@
                         be flexible
                     </h1>
                     <h4>
-                        non-seasonal<br v-if="!isMobile"/>
-                        capsules
+                        technical activewear that bleeds into your daily wardrobe.
                     </h4>
                 </div>
-                <div v-if="!isMobile" class="cta" @click="cta">learn more</div>
+                <div class="cta" @click="cta">learn more</div>
             </div>
             <div class="img-box">
                 <img v-lazy="hero"/>
             </div>
-            <div v-if="isMobile" class="cta" @click="cta">learn more</div>
         </div>
         <svg class="wave" v-if="isMobile" :width="width" height="917px" :viewBox="`0 0 ${width} 917`" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -43,14 +41,14 @@ export default {
     props: ['hero', 'cta'],
     mounted(){
       window.addEventListener('resize', ()=>{
-          this.width = window.innerWidth
-          this.height = window.innerHeight * .3
+          this.width = window.outerWidth
+          this.height = window.outerHeight * .3
       })
     },
     data () {
         return {
-            width : window.innerWidth,
-            height: window.innerHeight * .3
+            width : window.outerWidth,
+            height: window.outerHeight * .3
         }
     },
     computed:{
@@ -96,7 +94,7 @@ export default {
             .cta
                 margin-top 20px
                 font-size 2.7em
-                font-weight 400
+                font-weight 600
                 order 3
                 color #b6faff
                 cursor pointer
@@ -117,7 +115,6 @@ export default {
 @media screen and (max-width 800px)
     .flexible
         width 100%
-        position relative
         padding-top 0
         .hero
             flex-direction column
@@ -137,7 +134,6 @@ export default {
                 font-weight 400
                 order 3
                 color #b6faff
-        .wave
-            transform scaleY(1.5) scaleX(2)
+                width 100%
 </style>
 

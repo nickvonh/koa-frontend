@@ -1,9 +1,9 @@
 <template>
     <div class="influencer-box">
-        <div class="influencer-field-group" v-if="!applied">
-            <h2>Referal code</h2>
-            <h5>Input your code here and we'll match it!</h5>
-            <input type="text"  class="required email" v-model="influencerCode">
+        <div class="influencer-field-group" v-if="!igMatch.profile">
+            <a @click="influencer = true" v-if="!influencer">have a code?</a>
+            <a v-if="influencer">{{influencerCode.length > 0 ? 'searching...' : 'enter your code'}}</a>
+            <input type="text"  class="required" v-model="influencerCode" v-if="influencer">
         </div>
         <div class="result" v-if="!!igMatch.profile">
             <div>
@@ -13,8 +13,8 @@
             </div>
             <div>
                 <h3>@{{igMatch.username}}</h3>
-                <button v-if="!applied"@click="applyCode">Apply this code</button>
-                <button v-else disabled class="applied">Code Applied!</button>
+                <button v-if="!applied" @click="applyCode">apply this code</button>
+                <button v-else disabled class="applied">code applied!</button>
             </div>
         </div>
     </div>
@@ -64,6 +64,7 @@ export default {
                 this.discount = 20
                 this.igMatch.username = influencer.ig
                 let user = await axios.get(`https://www.instagram.com/${influencer.ig}/`)
+                console.log(user)
                 if(!!user){
                     let thumb = user.data.match(/\"profile_pic_url\"\:\"(.*?\.jpg)\"/)[1]
                     this.igMatch.profile = thumb
@@ -78,70 +79,62 @@ export default {
 <style lang="stylus">
 .cart
     .influencer-box
-        width 80%
-        height 80%
-        padding 10%
-        padding-top 0
-        display flex
-        flex-direction column
-        justify-content space-around
-        align-items center
-        position absolute 
-        top 0
-        left 0
-        background #f2f2f2
-.influencer-box
-    width 100%
-    height 100%
-    display flex
-    align-items center
-    .influencer-field-group
-        text-align left
-        width 40%
-        transition .3s ease
-        input
-            font-size 1.5em
-            padding 5px
-    .result
         width 100%
-        display flex 
-        justify-content space-around
-        align-items center
-        div
-            button
-                font-size .85em
-                font-weight 600
-                background #56a79f
-                width 100%
-                max-width 200px
-                height 40px
-                border none
-                border-radius 2px
-                color white
-                cursor pointer
-                &.applied
-                    background gray
-                    cursor initial
-        .thumb
-            margin 0 auto
-            width 120px
-            height 120px
-            border-radius 50%
-            border 1px solid transparent
-            overflow hidden
-            display flex
-            justify-content center
-            align-items center
-            img
-                max-width 100%
-@media screen and (max-width 800px)
-    .influencer-box
-        margin 0 auto
-        width 90%
-        height 100%
+        padding 5% 10%
         display flex
+        flex-direction row
         justify-content center
         align-items center
+        background #f2f2f2
+        box-sizing border-box
+        .influencer-field-group
+            text-align left
+            transition .3s ease
+            width 90%
+            a
+                margin 5px 0
+                width 100%
+                font-weight 600
+                font-size .8em
+            input
+                font-size .7em
+                width 100%
+                padding 5px 0
+                transition .3s ease
+        .result
+            display flex 
+            justify-content space-around
+            align-items center
+            padding 5% 10%
+            width 100%
+            div
+                width 100%
+                h3
+                    font-size .55em
+                button
+                    background #5bc581
+                    border none
+                    border-radius 5px
+                    padding 10px
+                    width 90%
+                    color white
+                    &.applied
+                        background gray
+                        cursor initial
+            .thumb
+                margin 0 auto
+                width 40px
+                height 40px
+                border-radius 50%
+                border 1px solid transparent
+                overflow hidden
+                display flex
+                justify-content center
+                align-items center
+                img
+                    max-width 100%
+@media screen and (max-width 800px)
+    .influencer-box
         h2, h3, h5
             margin-top 0
         .influencer-field-group

@@ -551,302 +551,302 @@ export default {
 }
 
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 
-@keyframes add  
-    0%
-      transform scale(1)
-      filter brightness(1)
-    50%
-      transform scale(1.025)
-      filter brightness(1.3)
-    100% 
-      transform scale(1)
-      filter brightness(1)
-@keyframes slide
-    from
-        height 0px
-    to
-        height 100%
-.prod-section
-    .current-color
-        font-size .7em
-    .attributes
-        li
-            display flex
-            align-items center
-            justify-content center
-            margin 0
-            margin-bottom 10px
-            width 100%
-            .attribute-icon
-                width 25px
-                margin-right 10px
-            span
-                font-size .75em
-                font-weight 500
-                color rgba(70,80,70, 1)
-    .mini-header
-        color #8084aa
-        font-size .85em
-        margin 4px 0
-    .profile
-        margin-top 30px
-        p
-            margin 15px 0
-            font-size .8em
-            font-weight 500
-        .wearing,.fabric
-            font-weight 500
-            font-size .75em
-        h5
-            margin-bottom 5px
-            a
-                font-size .6em
-                margin-left 15px
-    .prod-lock
-        .add-button
-            padding 10px
-            margin-bottom 10px
-    .add-button
-        background #56a79f
-        border none
-        border-radius 5px
-        padding 10px
-        color white
-        font-weight bold
-        cursor pointer
-        margin-top 5px
-        animation slide .5s ease
-        &:focus
-            outline none
-        &.adding
-            animation add .6s ease;
-        &.sold-out
-            background gray
+// @keyframes add  
+//     0%
+//       transform scale(1)
+//       filter brightness(1)
+//     50%
+//       transform scale(1.025)
+//       filter brightness(1.3)
+//     100% 
+//       transform scale(1)
+//       filter brightness(1)
+// @keyframes slide
+//     from
+//         height 0px
+//     to
+//         height 100%
+// .prod-section
+//     .current-color
+//         font-size .7em
+//     .attributes
+//         li
+//             display flex
+//             align-items center
+//             justify-content center
+//             margin 0
+//             margin-bottom 10px
+//             width 100%
+//             .attribute-icon
+//                 width 25px
+//                 margin-right 10px
+//             span
+//                 font-size .75em
+//                 font-weight 500
+//                 color rgba(70,80,70, 1)
+//     .mini-header
+//         color #8084aa
+//         font-size .85em
+//         margin 4px 0
+//     .profile
+//         margin-top 30px
+//         p
+//             margin 15px 0
+//             font-size .8em
+//             font-weight 500
+//         .wearing,.fabric
+//             font-weight 500
+//             font-size .75em
+//         h5
+//             margin-bottom 5px
+//             a
+//                 font-size .6em
+//                 margin-left 15px
+//     .prod-lock
+//         .add-button
+//             padding 10px
+//             margin-bottom 10px
+//     .add-button
+//         background #56a79f
+//         border none
+//         border-radius 5px
+//         padding 10px
+//         color white
+//         font-weight bold
+//         cursor pointer
+//         margin-top 5px
+//         animation slide .5s ease
+//         &:focus
+//             outline none
+//         &.adding
+//             animation add .6s ease;
+//         &.sold-out
+//             background gray
 
-    .image-transition-enter
-        opacity 0
-    .image-transition-enter-active
-        animation fadein .2s ease
-    .image-transition-leave-active
-        animation fadein .1s ease reverse
-    .image-transition-enter-to
-        opacity 1
-    .image-transition-leave-to
-        opacity 0
+//     .image-transition-enter
+//         opacity 0
+//     .image-transition-enter-active
+//         animation fadein .2s ease
+//     .image-transition-leave-active
+//         animation fadein .1s ease reverse
+//     .image-transition-enter-to
+//         opacity 1
+//     .image-transition-leave-to
+//         opacity 0
 
 
-    @keyframes fadein 
-        from 
-            opacity 0
-        to
-            opacity 1
-    .lockButton
-        display none
-    .prod-head
-        display flex
-        flex-direction row
-        justify-content center
-        align-items center
-        position relative
-        h1
-            font-size .9em
-    .prodLoop
-        display flex 
-        flex-flow row wrap 
-        justify-content space-around 
-    .prodTile 
-        display flex
-        flex-direction column
-        justify-content center
-        align-items center
-        width 30%
-        cursor pointer
-    .swatches, .sizes
-        display flex
-        flex-flow row
-        justify-content center
-        align-items center
-        max-width 400px
-        height 30px
-        margin 10px auto
-        transition .3s ease
-        .color,.size
-            flex none
-            width 20px
-            height 20px
-            padding 3px
-            &:hover,&.active
-                    border-radius 50%
-                    box-shadow 0px 0px 0px 2px rgb(125, 125, 125)
-            .swatch
-                border none
-                border-radius 50%
-                width 100%
-                height 100%
-                outline none
-                cursor pointer
-                box-shadow: 0px 0px 1px;
-                padding 0
-    .swatches
-        flex-flow row wrap
-    .wearing
-        color rgba(70,80,70, 1)
-        font-size .8em
-    .prod-details,.reviews
-        max-width 600px
-        margin 50px auto
-    .reviews
-        .review
-            background #f2f2f2
-            padding 20px
-            color #6b6b6b
-            margin-bottom 10px
-            text-align left
-            .body
-                font-size .85em
-            .foot
-                display flex
-                justify-content flex-start
-                align-items center
-                p
-                    margin 0
-                    margin-right 15px
-                    margin-bottom 1px
-                    font-weight 600
-                    font-size .85em
-                span
-                    font-size .75em
-            .rating-text
-                font-weight 900
-                font-size 12px
-                border 1px solid #cfcfcf
-                padding-left 5px
-                padding-right 5px
-                border-radius 5px
-                color #999
-                background #fff
-                margin-left 5px
-                margin-bottom 1px
-                margin-top 0
+//     @keyframes fadein 
+//         from 
+//             opacity 0
+//         to
+//             opacity 1
+//     .lockButton
+//         display none
+//     .prod-head
+//         display flex
+//         flex-direction row
+//         justify-content center
+//         align-items center
+//         position relative
+//         h1
+//             font-size .9em
+//     .prodLoop
+//         display flex 
+//         flex-flow row wrap 
+//         justify-content space-around 
+//     .prodTile 
+//         display flex
+//         flex-direction column
+//         justify-content center
+//         align-items center
+//         width 30%
+//         cursor pointer
+//     .swatches, .sizes
+//         display flex
+//         flex-flow row
+//         justify-content center
+//         align-items center
+//         max-width 400px
+//         height 30px
+//         margin 10px auto
+//         transition .3s ease
+//         .color,.size
+//             flex none
+//             width 20px
+//             height 20px
+//             padding 3px
+//             &:hover,&.active
+//                     border-radius 50%
+//                     box-shadow 0px 0px 0px 2px rgb(125, 125, 125)
+//             .swatch
+//                 border none
+//                 border-radius 50%
+//                 width 100%
+//                 height 100%
+//                 outline none
+//                 cursor pointer
+//                 box-shadow: 0px 0px 1px;
+//                 padding 0
+//     .swatches
+//         flex-flow row wrap
+//     .wearing
+//         color rgba(70,80,70, 1)
+//         font-size .8em
+//     .prod-details,.reviews
+//         max-width 600px
+//         margin 50px auto
+//     .reviews
+//         .review
+//             background #f2f2f2
+//             padding 20px
+//             color #6b6b6b
+//             margin-bottom 10px
+//             text-align left
+//             .body
+//                 font-size .85em
+//             .foot
+//                 display flex
+//                 justify-content flex-start
+//                 align-items center
+//                 p
+//                     margin 0
+//                     margin-right 15px
+//                     margin-bottom 1px
+//                     font-weight 600
+//                     font-size .85em
+//                 span
+//                     font-size .75em
+//             .rating-text
+//                 font-weight 900
+//                 font-size 12px
+//                 border 1px solid #cfcfcf
+//                 padding-left 5px
+//                 padding-right 5px
+//                 border-radius 5px
+//                 color #999
+//                 background #fff
+//                 margin-left 5px
+//                 margin-bottom 1px
+//                 margin-top 0
 
-    .description
-        margin 4% 0 0 0
-        font-size .9em
-        p
-            margin 5px 0
-    .sizes
-        justify-content space-around
-        .size
-            width 35px
-            height 35px
-            display flex
-            .sizeButton
-                background #76738a
-                color white
-                font-weight 600
-                width 35px
-                height 35px
-                font-size .6em
+//     .description
+//         margin 4% 0 0 0
+//         font-size .9em
+//         p
+//             margin 5px 0
+//     .sizes
+//         justify-content space-around
+//         .size
+//             width 35px
+//             height 35px
+//             display flex
+//             .sizeButton
+//                 background #76738a
+//                 color white
+//                 font-weight 600
+//                 width 35px
+//                 height 35px
+//                 font-size .6em
                 
-    .prod-section
-        &.prod-lock
-            padding-top 150px
-    .title
-        transition .2s ease
-        margin 5px 0 0 0
-        font-size .8em
-    .price
-        position absolute
-        top 13px
-        right 13px
-        font-size .75em
-        font-weight 500
-        s
-            color #e66d6d
-    .addBox
-        max-width 500px
-        margin 0 auto
-        &.prod-lock
-            position fixed
-            top 0
-            left 0
-            width 100%
-            background white
-            padding 0
-            max-width none
-            .title
-                font-size 1em
-            .swatches, .sizes
-                height auto
-                padding 5px 0
-                margin 2px auto
-            .price
-                position absolute
-                top 13px
-                right 13px
-                font-size .75em
-    .igFeed
-        margin 50px 0
-        .gallery
-            justify-content center
-            margin-left 0
-            li:first-child
-                margin-left 0
-            img.thumbnail
-                max-height 320px
-    @media screen and (max-width 800px)
-        .gallery
-            max-width 100%
-            margin-top 50px
-        .igFeed
-            .gallery
-                justify-content flex-start
-    .gallery
-        display flex
-        flex-direction row
-        overflow scroll
-        max-width 95%
-        margin 5px auto
-        margin-top 20px
-        .thumbnail
-            max-width 600px
-            max-height 60vh
-        .prodTile 
-            width 40%
-    .gallery.lock
-        margin-top 150px !important
-    @media screen and (max-width 800px)
-        .title
-            margin 10px 0 6px 0
-            font-size 1.5em
-        .swatches,.sizes
-            width 90%
-            height auto
-            padding 2.5px 0
-            .color,.size
-                justify-content space-around
-        .sizes
-            width 60%
-        .lockButton
-            display block
-            position absolute
-            top 13px
-            left 17px
-            width .75em
-            z-index 9999
-    @media screen and (max-width 800px)
-        .prod-details,.reviews,.igFeed
-            margin 12% 6%
-            text-align left
-            h6
-                margin 0
-        .attribute-icon
-            margin-right 15px
-        .attributes
-            li
-                display flex
-                align-items center
-                justify-content flex-start
+//     .prod-section
+//         &.prod-lock
+//             padding-top 150px
+//     .title
+//         transition .2s ease
+//         margin 5px 0 0 0
+//         font-size .8em
+//     .price
+//         position absolute
+//         top 13px
+//         right 13px
+//         font-size .75em
+//         font-weight 500
+//         s
+//             color #e66d6d
+//     .addBox
+//         max-width 500px
+//         margin 0 auto
+//         &.prod-lock
+//             position fixed
+//             top 0
+//             left 0
+//             width 100%
+//             background white
+//             padding 0
+//             max-width none
+//             .title
+//                 font-size 1em
+//             .swatches, .sizes
+//                 height auto
+//                 padding 5px 0
+//                 margin 2px auto
+//             .price
+//                 position absolute
+//                 top 13px
+//                 right 13px
+//                 font-size .75em
+//     .igFeed
+//         margin 50px 0
+//         .gallery
+//             justify-content center
+//             margin-left 0
+//             li:first-child
+//                 margin-left 0
+//             img.thumbnail
+//                 max-height 320px
+//     @media screen and (max-width 800px)
+//         .gallery
+//             max-width 100%
+//             margin-top 50px
+//         .igFeed
+//             .gallery
+//                 justify-content flex-start
+//     .gallery
+//         display flex
+//         flex-direction row
+//         overflow scroll
+//         max-width 95%
+//         margin 5px auto
+//         margin-top 20px
+//         .thumbnail
+//             max-width 600px
+//             max-height 60vh
+//         .prodTile 
+//             width 40%
+//     .gallery.lock
+//         margin-top 150px !important
+//     @media screen and (max-width 800px)
+//         .title
+//             margin 10px 0 6px 0
+//             font-size 1.5em
+//         .swatches,.sizes
+//             width 90%
+//             height auto
+//             padding 2.5px 0
+//             .color,.size
+//                 justify-content space-around
+//         .sizes
+//             width 60%
+//         .lockButton
+//             display block
+//             position absolute
+//             top 13px
+//             left 17px
+//             width .75em
+//             z-index 9999
+//     @media screen and (max-width 800px)
+//         .prod-details,.reviews,.igFeed
+//             margin 12% 6%
+//             text-align left
+//             h6
+//                 margin 0
+//         .attribute-icon
+//             margin-right 15px
+//         .attributes
+//             li
+//                 display flex
+//                 align-items center
+//                 justify-content flex-start
 </style>

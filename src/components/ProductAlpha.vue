@@ -3,6 +3,7 @@
         <div class="prod-land" v-if="currentImages">
 
             <div class="prod-head" v-if="!isDesktop">
+                <div v-html="backIcon" @click="back()" class="lockButton"></div>
                 <h1 class="title">{{prodObj.title}}</h1>
                 <span class="price">${{priceObj.price}} <s v-if="!!priceObj.ogPrice && priceObj.ogPrice !== 'NaN'">${{parseInt(priceObj.ogPrice)}}</s></span>
             </div>
@@ -12,10 +13,12 @@
             :loop="false"
             :minSwipeDistance="10"
             paginationActiveColor="#2c3e50"
-            paginationColor="#ffffff"
+            paginationColor="#f9f9f9"
+            :navigationEnabled="isDesktop"
             :class="{'prod-hero':true, 'details': moreDetails, 'full': fullGallery}">
                 <slide v-for="(each,index) in currentImages" class="thumb-slide" :key="index">
-                    <img :src="each.src" @click="imgFunc"/>
+                    <div class="prod-img" v-lazy:background-image="each.src" @click="imgFunc"></div>
+                    <!-- <img :src="each.src" @click="imgFunc"/> -->
                 </slide>
             </carousel>
 
@@ -24,13 +27,14 @@
                     <h1 class="title">{{prodObj.title}}</h1>
                     <span class="price">${{priceObj.price}} <s v-if="!!priceObj.ogPrice && priceObj.ogPrice !== 'NaN'">${{parseInt(priceObj.ogPrice)}}</s></span>
                 </div>
-                <product-details :active="moreDetails" 
+                <product-details :active="moreDetails"
                     :activate="()=>{moreDetails = true}" 
                     :deactivate="()=>{moreDetails = false}"
                     :product="prodObj"
                     :isDesktop="isDesktop"
                     :fabric="fabric"
-                    :modelInfo="modelInfo.value">
+                    :reviews="reviews"
+                    :modelInfo="!!modelInfo ? modelInfo.value : null">
                 </product-details>
 
                 <ul class="swatches">
@@ -38,15 +42,15 @@
                         <div :class="{active:isColor(color),swatch:true}" :style="{background : findSwatch(color) || 'transparent'}"></div>
                     </li>
                 </ul>
-                <ul class="sizes">
+                <ul :class="['sizes', {highlight:highlightSize}]">
                     <li v-for="size in sizes" :key="size" :class="{active:isSize(size), size:true}">
                         <div @click="selectSize(size)" class="sizeButton">
                             {{size}}
                         </div>
                     </li>
                 </ul>
-                <div :key="1" class="add">
-                    <button @click="!!selectedSize && !!colorVariants && !!available ? addToCart(JSON.stringify(finalVariant)) : null" :class="{'add-button' : true, adding:adding}">add to cart</button>
+                <div :key="1" class="add" v-if="available">
+                    <button @click="!!selectedSize && !!colorVariants && !!available ? addToCart(JSON.stringify(finalVariant)) : !selectedSize ? highlightSize=true : null" :class="{'add-button' : true, adding:adding}">add to cart</button>
                 </div>
                 <div v-if="!!selectedSize && !!colorVariants && !available" :key="1" class="add">
                     <button disabled class="add-button sold-out">sold out</button>
@@ -83,7 +87,7 @@
 import gql from 'graphql-tag'
 import queries from '@/resources/query'
 import swatches from '@/resources/swatches'
-import back from '@/assets/back.svg'
+import backIcon from '@/assets/back.svg'
 import Events from './Bus.js'
 import brushed from '@/assets/brushed.svg'
 import insulate from '@/assets/insulate.svg'
@@ -127,13 +131,13 @@ export default {
         }
         return {
             exImages: [exFull, exFront, exBack, exFrontTwo],
+            backIcon : backIcon,
             swatches : swatches.swatches,
             pause: false,
             locked: false,
             selectedSize: null,
             adding:false,
             spinner: spinner,
-            fullGallery: false,
             fullImgKey: -1,
             prodObj: false,
             reviews: review_data,
@@ -141,22 +145,23 @@ export default {
             fabrics: fabrics.fabrics,
             windowWidth: window.outerWidth,
             moreDetails: false,
+            highlightSize: false,
             modelIndex: [
                 {
                     name: 'serena',
-                    value : `Serena is 5'5 – wearing S`
+                    value : `Serena is 5'5 – wearing XS`
                 },
                 {
                     name: 'andi',
                     value: `Andi is 5'7 – wearing XS`
                 },
                 {
-                    name: 'kelly',
-                    value: `Kelly is 5'5 – wearing M`
+                    name: 'kiki',
+                    value: `Kiki is 5'5 – wearing S`
                 },
                 {
-                    name: 'dana',
-                    value: `Dana is 5'7 – wearing S`
+                    name: 'tage',
+                    value: `T'Age is 6'1 – wearing S`
                 },
                 {
                     name: 'ying',
@@ -199,18 +204,11 @@ export default {
         }
     },
     computed : {
+        fullGallery(){
+            return !this.isDesktop && this.$route.hash === '#gallery'  
+        },
         isDesktop(){
             return this.windowWidth > 800
-        },
-        reviewAvg(){
-            if(!!this.reviews){
-                let sum = 0;
-                this.reviews.forEach(n => sum += n.rating)
-                return {
-                    avg: sum / this.reviews.length,
-                    count: this.reviews.length
-                }
-            }
         },
         fabric(){
             if(!!this.tags){
@@ -262,7 +260,11 @@ export default {
              
         },
         available(){
-            return this.finalVariant.available
+            if(this.finalVariant){
+                return this.finalVariant.available
+            }else{
+                return true
+            }
         },
         lockIcon(){
             return back
@@ -349,7 +351,7 @@ export default {
                         "name": "Koa"
                     }
                 }
-                if(!!this.reviews){
+                if(!!this.reviews && !!this.reviewAvg){
                     schema["aggregateRating"]= {
                         "@type": "AggregateRating",
                         "ratingValue": this.reviewAvg.avg,
@@ -362,10 +364,6 @@ export default {
         }
     },
     methods : {
-        shortDate(date){
-            let dateObj = new Date(date)
-            return dateObj.toLocaleDateString()
-        },
         listener(e){
             function getScroll(element){
                 return element.offsetTop - window.scrollY
@@ -390,16 +388,19 @@ export default {
             
         },
         imgFunc(){
-           !this.isDesktop ? this.fullGallery = !this.fullGallery : null
+           if(!this.isDesktop){
+               this.$route.hash === '#gallery' ? this.$router.go(-1) : this.$router.push('#gallery') 
+           }
         },
         igFunc(img){
             window.open(`https://instagram.com/p/${img.shortcode}`, "_blank")
         },
         selectColor(color){
             color = color.toLowerCase().replace(/\//g,'-').replace(' ','-')
-            this.$router.replace({name : 'Product-Alpha', params: {product: this.product, color: color}})
+            this.$router.replace({name : 'Product-Color', params: {product: this.product, color: color}})
         },
         selectSize(size){
+            this.highlightSize = false
             this.selectedSize = size
             localStorage.selectedSize = size
         },
@@ -433,6 +434,9 @@ export default {
             this.$router.go(-1)
         },
         addToCart(variant){
+            if(!this.selectedSize){
+                console.log('size plz')
+            }
             console.log(Events.Bus)
             this.adding = true
             setTimeout(()=>{this.adding = false}, 2000)
@@ -499,13 +503,12 @@ export default {
             }catch(e){
                 console.warn(e)
             }
-                
-            arr = arr.concat(igFeed.data.data);
 
 
-            if(!!igFeed.data.pagination.next_url){
+            if(!!igFeed && !!igFeed.data && !!igFeed.data.pagination && !!igFeed.data.pagination.next_url){
                 getIg(igFeed.data.pagination.next_url)
-            }else{
+            }else if(!!igFeed && !!igFeed.data && !!igFeed.data.data){
+                arr = arr.concat(igFeed.data.data);
                 that.igFeed = arr
             }
         }
@@ -525,12 +528,13 @@ export default {
 </script>
 <style lang="stylus">
 .prod-land
-    height 100%
     flex-direction column
     align-items center
     display flex
     background #f2f2f2
     text-align left
+    user-select none
+    padding-bottom 20px
     .addBox
         display flex
         flex-direction column
@@ -539,24 +543,30 @@ export default {
         height 50%
     .prod-hero
         width 100%
-        height 60vh
+        height 45vh
         transition .3s ease
         &.full
             height 90vh !important
-        &.details
-            height 42vh
+        .VueCarousel
+            width 100%
+            height 100%
         .VueCarousel-wrapper
-            height 80%
+            height 90%
             .VueCarousel-inner
                 height 100%
                 .thumb-slide
                     height 100%
                     width 100%
-                    img
+                    .prod-img
                         height 100%
-                        width auto
+                        width 100%
+                        background-size contain
+                        background-repeat no-repeat
+                        background-position 50%
+        .VueCarousel-navigation-prev, .VueCarousel-navigation-next
+            transform none !important
         .VueCarousel-pagination
-            height 20%
+            height 10%
         .thumb-slide
             display flex
             justify-content center
@@ -567,7 +577,11 @@ export default {
         justify-content space-between
         align-items center
         position relative
-        width 80%
+        width 90%
+        .lockButton
+            height 15px
+            width 15px
+            fill #2c3e50
         .title
             font-weight 600
             font-size 1.5em
@@ -583,13 +597,22 @@ export default {
         left 0
         width 100%
         padding-top 10px
+        z-index 1001
         .swatches, .sizes
             display flex
             justify-content space-around
             width 80%
             margin 0 auto
+            transition .6s ease background-color
+            border-radius 5px
+            &.highlight
+                background-color #ff7b7b
+                padding 2% 0
+                margin 2% auto
+                .sizeButton
+                    color white !important
         .swatches
-            padding 4% 0
+            padding 3% 0
             .color
                 &:after 
                     content ''
@@ -637,15 +660,20 @@ export default {
                         color #2c3e50
                         margin-bottom 5px
         .add
-            padding 3% 0
+            padding 2% 0
             display flex
             justify-content center
+            z-index 1000
             .add-button
-                color rgba(0,0,0,1)
-                border 1px solid black 
-                background none
+                color white
+                border none
+                border-radius 3px
+                background #53577c
                 padding 8px 20px
-    .prod-details,.reviews,.igFeed
+                height 30px
+                &.sold-out
+                    background gray
+    .prod-details,.igFeed
         margin 12% 0%
         text-align left
         h6
@@ -653,15 +681,11 @@ export default {
 @media screen and (min-height 801px) and (max-height 1000px) and (max-width 800px)
     .prod-land 
         .prod-hero
-            height 70vh
-            &.details
-                height 50vh
+            height 50vh
 @media screen and (max-height 600px)  and (max-width 800px)
     .prod-land 
         .prod-hero
-            height 50vh
-            &.details
-                height 38vh
+            height 38vh
 @media screen and (min-width 801px)
     .prod-land
         flex-direction row
@@ -674,7 +698,7 @@ export default {
             &.details
                 height 100vh
             .VueCarousel-wrapper
-                height 90%
+                height 80%
                 .VueCarousel-inner
                     height 100%
                     .thumb-slide
@@ -694,4 +718,15 @@ export default {
             height 100vh
             position initial
             align-items center
+
+.prod-img[lazy]
+  transition .3s background-position ease
+
+.prod-img[lazy="loading"]
+  opacity 0
+  background-position 100% !important
+
+.prod-img[lazy="loaded"]
+  opacity 1
+  background-position 50% !important
 </style>

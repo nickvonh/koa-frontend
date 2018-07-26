@@ -1,29 +1,52 @@
 <template>
   <div :class="{cart:true, open:active}">
-    <div :class="{'cart-button':true, active:active, adding:adding}" v-if="cartItems.length > 0" @click="active = !active" v-html="!!active ? down : bagIcon">
-    </div>
+    <!-- <div :class="{'cart-button':true, active:active, adding:adding}" v-if="cartItems.length > 0" @click="active = !active" v-html="!!active ? down : bagIcon">
+      {{totalQty}}
+    </div> -->
+    <i class="icon-shopping-bag">
+      <svg :class="{'cart-button':true, active:active, adding:adding}" v-if="cartItems.length > 0 && !active" @click="toggleOn">
+        <use xlink:href="#icon-shopping-bag"></use>
+      </svg>
+      <svg :class="{'cart-button':true, active:active, adding:adding}" v-if="cartItems.length > 0 && !!active" @click="toggleOff" v-html="down" fill="red">
+      </svg>
+    </i>
+    <span class="qty" v-if="cartItems.length > 0 && !active">{{cartItems.length}}</span>
     <div class="exit-box" v-if="active" @click="active = false"></div>
     <div class="cart-container">
       <ul class="cart-list">
         <li v-for="(product,key) in cartItems" :key="key" class="cart-item">
-          <span class="title">{{product.product.handle}}</span>
           <img  v-if="!!product.image" :src="product.image.src" class="thumbnail" @click="details(product.id)"/>
           <div v-else class="thumbnail" @click="details(product.id)"></div>
-          <div class="split">
-            <span v-if="product.qty > 1">{{product.qty}}x</span>
-            <span>{{product.title}}</span>
-            <span>{{product.price}}</span>
+          <div>
+            <span class="title">{{product.product.handle}}</span>
+            <div class="split">
+              <span v-if="product.qty > 1">{{product.qty}}x</span>
+              <span>{{product.title}}</span>
+            </div>
           </div>
-          <button @click="removeItem(product.id, key)" class="show  hidden" v-if="product.details">X</button>
+          <span class="price">${{parseInt(product.price)}}</span>
+          <i class="icon-remove" @click="removeItem(product.id, key)">
+            <svg class="show hidden">
+              <use xlink:href="#icon-remove"></use>
+            </svg>
+          </i>
         </li>
       </ul>
-      <div class="details" v-if="!influencer">
-        <h4>subtotal : ${{subtotalPrice}}</h4>
-        <a class="influencer-link" @click="influencer = true" v-if="!influencer && !couponCode">have a referrer code?</a>
-        <h5 v-if="couponCode">code: {{couponCode}}</h5>
-        <button v-show="cart" class="checkout" @click="checkout">checkout</button>
+      <div class="details">
+        <influencer-code v-if="!couponCode"></influencer-code>
+        <div class="subtotal">
+          <h4>subtotal : ${{subtotalPrice}}</h4>
+          <h5 v-if="couponCode">code: {{couponCode}} 
+            <i class="icon-remove" @click="removeCouponCode()">
+              <svg>
+                <use xlink:href="#icon-remove"></use>
+              </svg>
+            </i>
+          </h5>
+          <button v-show="cart" class="checkout" @click="checkout">checkout</button>
+        </div>
       </div>
-      <influencer-code v-else></influencer-code>
+      
 
       <a class="close-link" @click="influencer = false" v-if="!!influencer">done</a>
     </div>
@@ -47,7 +70,6 @@ export default {
       cartItems : [],
       cart: null,
       bagIcon: bagIcon,
-      active: false,
       adding: false,
       userId: null,
       newCode: false,
@@ -56,6 +78,9 @@ export default {
     }
   },
   computed : {
+    active(){
+      return this.$route.hash === "#cart" && this.cartItems.length > 0
+    },
     itemList(){
       if(!!this.cart){
         return this.cart.checkout.lineItems.edges.map( e => e.node )
@@ -107,7 +132,7 @@ export default {
     totalQty(nu, old, something){
       console.log(nu,old, something)
       if(nu === 0){
-        this.active = false
+        this.$router.go(-1)
       }
       //else if( old === 0 && nu === 1){
       //   console.log('watch')
@@ -170,6 +195,12 @@ export default {
     
   },
   methods : {
+    toggleOn(){
+      this.$router.push('#cart')
+    },
+    toggleOff(){
+      this.$router.go(-1)
+    },
     addCouponCode(couponCode){
 
       let date = new Date()
@@ -342,31 +373,29 @@ export default {
 @keyframes add  
     0%
       transform scale(1)
-      filter brightness(1)
+      filter hue-rotate(35deg) brightness(0.8)
     50%
       transform scale(1.2)
-      filter brightness(1.6)
+      filter hue-rotate(35deg) brightness(1)
     100% 
       transform scale(1)
-      filter brightness(1)
+      filter hue-rotate(35deg) brightness(0.8)
 .cart
   background #e9e9e9
   position fixed
   bottom -100%
   left 0
   width 100%
-  height 60%
+  height 100%
   transition .4s ease
-  z-index 999999
+  z-index 5000
   user-select none
   .close-link
-    z-index 999999
+    z-index 1000
     position absolute
     bottom 10px
     left 45%
     right 45%
-  @media screen and (max-width:800px)
-    height 100%
   .exit-box
     position absolute
     top -100%
@@ -378,21 +407,26 @@ export default {
     transition .3s ease
   &.open
     bottom 0
-  .cart-button
-    border-radius 50%
+  span.qty
     position fixed
-    bottom 20px
+    bottom 25px
+    right 10px
+    z-index 9999999
+    color black
+    font-size 8px
+    font-weight 700
+  .cart-button
+    border-radius 5px
+    position fixed
+    bottom 10px
     right 15px
-    z-index 9999999999999999
+    z-index 1000
     cursor pointer
     transition .4s ease
-    height 18px
-    width 18px
-    svg
-      fill #53577c
-    &.active
-      svg
-        fill red
+    width 1.5rem
+    height 1.5rem
+    padding .25rem
+    filter hue-rotate(35deg) brightness(0.8)
     &.adding
       animation add .6s ease;
     img
@@ -405,18 +439,19 @@ export default {
       margin 0
   h1
     margin 5px 0
-
 .cart-container
+  flex-direction column
   height 100%
-  width 100%
+  width 50%
+  min-width 600px
+  margin 0 auto
   display flex
-  flex-direction row wrap
   justify-content space-between
-@media screen and (max-width 800px)
-  .cart-container
-    flex-direction column
-  .cart-list
-    overflow-x scroll
+  @media screen and (max-width 800px)
+    width 100%
+    min-width 0
+.cart-list
+  overflow-x scroll
 .details
   display flex
   flex-direction column
@@ -432,45 +467,58 @@ export default {
     padding 10px
     width 90%
     color white
+  .subtotal
+    width 100%
+    padding 10%
+    box-sizing border-box
+    display flex
+    flex-direction column
+    align-items center
+    h5
+      position relative
+      width auto
+      .icon-remove
+        position absolute
+        top -.5rem
+        right -1rem
+        svg
+          height .5rem
+          width .5rem
+          padding .5rem
+    h4,h5
+      margin 10px 0
 
 .cart-list
   display flex
-  flex-flow row wrap
-  align-items center
-  justify-content center
-  margin 0
+  flex-direction column
   padding 10px
-  flex 2
+  height 50%
+  box-sizing border-box
+  overflow-y scroll
   .cart-item
     position relative
     display flex
-    flex-direction column
-    flex none
-    justify-content flex-start
+    flex-direction row
+    justify-content space-between
+    align-items center
     background #f2f2f2
-    padding 10px
     border-radius 5px
-    box-shadow 1px 1px 2px 2px #00000030
-    width 35%
-    padding 10px
-    margin 5px
-    @media screen and (min-width 800px)
-      width 20%
+    box-sizing border-box
     .hidden
       display none
       &.show
         display block
         position absolute
-        top -10px
-        left -10px
-        width 25px
-        height 25px
+        top 5px
+        right 5px
+        width 10px
+        height 10px
         cursor pointer
-        background lighten(#512A28,30%)
         border-radius 50%
         color white
         font-size 8px
         font-weight 900
+        filter brightness(0.7)
         &.executing
           opacity 1
           background #512A28 !important
@@ -488,17 +536,20 @@ export default {
       margin 5px 0
       font-size 12px
     img, div.thumbnail
+      width auto
       height 100%
-      max-height 120px
+      max-height 80px
       cursor pointer
-      margin 0 auto
+      border-radius 5px
     div.thumbnail
       width 100%
     .split
       display flex
       justify-content space-between
-      margin 5px
       span
         font-size 10px
+    span.price
+      font-size 10px
+      text-align right
 </style>
 

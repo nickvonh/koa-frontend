@@ -13,7 +13,7 @@ import VueLazyLoad from 'vue-lazyload'
 
 Vue.use(Meta);
 Vue.use(VueLazyLoad, {
-  preLoad: 1.3
+  preLoad: 1.2
 });
 
 const vueImgConfig = {

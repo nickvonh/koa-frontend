@@ -1,6 +1,6 @@
 <template>
     <div class="fabrics">
-        <img :src="backIcon" @click="back()" class="backButton"/>
+        <svg v-html="backIcon" @click="back()" class="backButton"/>
         <div class="fabrics-container active">
             <div class="fabric-details">
                 <div v-if="!!activeFabric" class="details-container">
@@ -19,7 +19,7 @@
                         <ul class="traits">
                             <h4>Fabric Traits</h4>
                             <li v-for="(trait,key) in activeFabric.details.traits" :key="key" class="trait">
-                                <img v-if="!!trait.icon" :src="trait.icon"/>
+                                <svg v-if="!!trait.icon" v-html="trait.icon"/>
                                 <h5>{{trait.display}}</h5>
                             </li>
                         </ul>
@@ -27,7 +27,7 @@
                         <h4>Products Made With This</h4>
                         <div class="gallery relatedProducts" v-if="relatedProducts">
                             <div v-for="(each,key) in relatedProducts" :key="key" class="product" @click="selectProduct(each)">
-                                <img :src="each.images.edges[0].node.src"/>
+                                <img :src="getMainImg(each).src"/>
                                 <strong class="title-row"><span>{{each.title}}</span><span>${{parseInt(each.variants.edges[0].node.price)}} <s v-if="!!each.variants.edges[0].node.compareAtPrice && each.variants.edges[0].node.compareAtPrice !== 'NaN'">${{parseInt(each.variants.edges[0].node.compareAtPrice)}}</s></span></strong>
                             </div>
                         </div>
@@ -86,6 +86,11 @@ export default {
         },
         back(){
             this.$router.go(-1)
+        },
+        getMainImg(product){
+            let color = product.variants.edges[0].node.selectedOptions.find(e => e.name === 'Color').value;
+            let reg = new RegExp(color.replace('/','-').replace(' ','-'), 'i')
+            return product.images.edges.filter(i => !!reg.test(i.node.altText.replace(/\//g,'-').replace(' ','-'))).map(i => i.node)[0]
         },
     }
 }
@@ -146,7 +151,8 @@ export default {
                     text-align left
                     margin-bottom 10px
                     h3
-                        font-weight 600
+                        font-weight 500
+                        font-size 1.3em
                 .traits
                     display flex
                     flex-direction column
@@ -159,8 +165,10 @@ export default {
                         justify-content flex-start
                         align-items center
                         margin-bottom 10px
-                        img
+                        svg
                             height 25px
+                            width 25px
+                            margin-right 10px
                         h5
                             margin-left 1px
                             font-size .9em
@@ -201,6 +209,7 @@ export default {
         top 35px
         left 17px
         width .75em
-        z-index 9999
+        height .75em
+        z-index 999
         filter invert(1)
 </style>

@@ -3,14 +3,15 @@
     <hero :hero="frames.heroImage" :cta="shop"></hero>
     <!-- <quote :background="frames.tage" copy="stylish gear that fits into your life"></quote> -->
     <div class="shout-box">
-      <h2>check out our curated collections</h2>
+      <h2>check out our collections</h2>
       <div class="shouts">
-        <shoutout :image="frames.midi" :cta="`crop tops`" :clickFunction="goMidi" color="ash"></shoutout>
-        <shoutout :image="frames.leggings" :cta="`leggings`" :clickFunction="goBottoms" color="cream"></shoutout>
+        <shoutout :image="frames.midi" :cta="`tops`" :clickFunction="goTops" color="ash"></shoutout>
+        <shoutout :image="frames.leggings" :cta="`bottoms`" :clickFunction="goBottoms" color="cream"></shoutout>
         <shoutout :image="frames.shells" :cta="`shells`" :clickFunction="goOuter" color="mint"></shoutout>
       </div>
     </div>
-    <flexible :hero="frames.flexImg" :cta="goFabrics"></flexible>
+    <flexible :hero="frames.flexImg" :cta="goAbout"></flexible>
+    <instagram/>
   </div>
 </template>
 
@@ -49,8 +50,8 @@ export default {
     shop(){
       this.$router.push({name:'Collection', params:{collection:'all'}})
     },
-    goMidi(){
-      this.$router.push({name:'Group', params:{group:'midi'}})
+    goTops(){
+      this.$router.push({name:'Collection', params:{collection:'tops'}})
     },
     goOuter(){
       this.$router.push({name:'Collection', params:{collection:'outer-layers'}})
@@ -60,6 +61,9 @@ export default {
     },
     goFabrics(){
       this.$router.push({name:'Fabrics'})
+    },
+    goAbout(){
+      this.$router.push({name:'About'})
     }
   }
 }
@@ -81,27 +85,29 @@ export default {
   align-items center
   margin 0 auto
   .shout-box
-    width 90%
+    width 100%
     text-align left
-    padding 5%
+    padding-left 5%
     min-height 60vh
-    display flex
-    flex-flow column
     color #666666
+    box-sizing border-box
     h2
       font-size 3em
       font-weight 500
       margin-bottom 10%
     .shouts
       display flex
-      flex-flow row wrap
       justify-content space-between
+      width 100%
+      height 80vh
     @media screen and (max-width 800px)
       h2
         font-size 1.75em
         font-weight 500
       .shouts
-        flex-flow column nowrap
+        display flex
+        justify-content flex-start
+        overflow-x scroll
   .VueCarousel
     width 100%
   .VueCarousel-pagination

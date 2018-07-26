@@ -31,15 +31,27 @@ export default {
     cursor pointer
     h3
         font-size 2em
-        transform translateY(-175%)
+        color white
+        font-weight 600
+        margin 0
+        background rgba(142,142,142,.1)
+        width 100%
+        height 100%
+        padding 5%
+        display flex
+        justify-content flex-start
+        align-items flex-start
+        box-sizing border-box
+    &:hover
+        h3
+            color #6dc6c5
 
 @media screen and (max-width 800px)
     .shoutout
-        height 50vh
-        width 100%
+        flex 0
+        flex-shrink 0
+        flex-basis 80%
+        height 40vh
         padding 0
-        margin 15% 0
-        h3
-            font-size 1.5em
-            transform translateY(-175%)
+        margin-right 5%
 </style>

@@ -1,7 +1,14 @@
 <template>
   <div id="app">
+    <nav class="bottom-bar">
+      <router-link to="/">
+        <svg @click="()=>{}" class="logo" v-html="logo"/>
+      </router-link>
+    </nav>  
+    <nav-menu :collections="collections"></nav-menu>
+    
     <cart></cart>
-    <router-view :products="products" :class="{view : true, padTop : !isHome}"/>
+    <router-view :products="products" :collections="collections" :class="{view : true, padTop : !isHome}"/>
   </div>
 </template>
 
@@ -10,14 +17,15 @@ import gql from 'graphql-tag'
 import queries from './resources/query'
 import Cart from './components/Cart'
 import MessageBar from './components/MessageBar'
-import TopBar from './components/TopBar'
+import NavMenu from './components/NavMenu'
 import Subscribe from './components/Subscribe'
 import SiteFooter from './components/SiteFooter'
 import MobNav from './components/MobNav'
+import logo from './assets/logo.svg'
 
 export default {
   name: 'app',
-  components: {Cart, TopBar, MessageBar, Subscribe, SiteFooter, MobNav},
+  components: {Cart, NavMenu, MessageBar, Subscribe, SiteFooter, MobNav},
   apollo: {
     shop : {
       query: gql(queries.rootQuery),
@@ -59,7 +67,8 @@ export default {
     return {
       activeCollection : null,
       shop : null,
-      notTop: false
+      notTop: false,
+      logo: logo
     }
   },
   mounted(){
@@ -99,26 +108,12 @@ hr
   border-top 1px solid #53577c74
 body
   margin 0
-.links
-  background none
-  border none
-  font-size .75em
-  padding 5px
-  margin-top 10px
-  cursor pointer
-  color #53577c
-  font-weight 300
-  &:focus,&:hover
-    outline none
-    font-weight 600
-    color lighten(#53577c, 50%)
 #app 
   font-family 'Avenir', Helvetica, Arial, sans-serif
   -webkit-font-smoothing antialiased
   -moz-osx-font-smoothing grayscale
   text-align center
   color #2c3e50
-  position relative
 .view.padTop
   margin-top 0
 .header
@@ -134,27 +129,9 @@ body
     .links
       padding 0
       margin 0 10px
-    .logo
-      margin 10px 0
-      height 15px
-      width auto
     .tagLine
       display none
-    .logo
-      max-width 100px
-@media screen and (max-width 800px)
-  .header
-    &.stick
-      position fixed
-      top 0
-      left 0
-      width 100%
-      height 40px
-      z-index 99999999999999999999
 
-.logo
-  width 50%
-  max-width 200px
 
 
 h1, h2 
@@ -174,10 +151,24 @@ a
     color lighten(#53577c, 50%)
   img.social
     height 20px
-
+.bottom-bar
+  position fixed
+  bottom 0
+  left 0
+  width 100%
+  height 3.5rem
+  background rgb(255,255,255)
+  z-index 1000
+  display flex
+  align-items center
+  justify-content center
+  .logo
+      padding 10px 0
+      height 15px
+      width auto
+      max-width 100px
 img[lazy]
-  transition .3s ease transform opacity
-  transition-delay .2s
+  transition .3s transform opacity
 
 img[lazy="loading"]
   opacity 0
@@ -187,13 +178,5 @@ img[lazy="loaded"]
   opacity 1
   transform translateX(0)
 
-div[lazy]
-  transition .3s ease
-  transition-delay .2s
 
-div[lazy="loading"]
-  background-position-x 20px
-
-div[lazy="loaded"]
-  background-position-x 0
 </style>

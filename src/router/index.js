@@ -59,36 +59,29 @@ export default new Router({
           path: ':product',
           name: 'Product',
           props: true,
-          component: Product
+          component: ProductAlpha
         },
         {
           path: ':product/:color',
           name: 'Product-Color',
           props: true,
-          component: Product,
-          children: [
-            {
-              path: 'gallery/:index',
-              name: 'Full-Gallery',
-              props: true,
-              component: FullGallery
-            }
-          ]
-        },
-        {
-          path: ':product/:color/v2',
-          name: 'Product-Alpha',
-          props: true,
           component: ProductAlpha,
-          children: [
-            {
-              path: 'gallery/:index',
-              name: 'Full-Gallery',
-              props: true,
-              component: FullGallery
-            }
-          ]
+          
         }
+        // {
+        //   path: ':product/:color/v2',
+        //   name: 'Product-Alpha',
+        //   props: true,
+        //   component: ProductAlpha,
+        //   children: [
+        //     {
+        //       path: 'gallery/:index',
+        //       name: 'Full-Gallery',
+        //       props: true,
+        //       component: FullGallery
+        //     }
+        //   ]
+        // }
       ]
     },
     {

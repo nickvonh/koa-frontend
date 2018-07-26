@@ -20,7 +20,7 @@ export default {
                 touch : 'ultra soft',
                 traits : [
                     {
-                        display: 'brushed inner lining',
+                        display: 'brushed lining',
                         icon : brushedIcon
                     },
                     {
@@ -28,7 +28,7 @@ export default {
                         icon: dry
                     }
                 ],
-                tagLine : 'Ultra soft brushed fabric made to feel <em>amazing</em> on your skin'
+                tagLine : 'Lined with ultra light fleece, our brushed fabric is perfectly soft and cozy for all occasions'
             }
         },
         {
@@ -43,7 +43,7 @@ export default {
                         icon : insulate
                     }
                 ],
-                tagLine : 'Heavy stretch scuba, for a warm structured outer layer.'
+                tagLine : 'With a smooth sheen finish, our heavy stretch scuba makes for a chic and structured outer layer'
             }
         },
         {
@@ -51,7 +51,7 @@ export default {
             image: light,
             details: {
                 weight : 'light',
-                touch : 'dense and slick',
+                touch : 'smooth and slick',
                 traits : [
                     {
                         display : 'insulating shell',
@@ -61,11 +61,11 @@ export default {
                         display : 'structured draping'
                     }
                 ],
-                tagLine : 'Lightweight insulating shell, perfect for a windy day.'
+                tagLine : 'With just the right amount of compression, our light stretch scuba makes the perfect insulating shell that allows for movement'
             }
         },
         {
-            name : 'Ultralite',
+            name : 'Slick Poly',
             image: ultra,
             details: {
                 weight : 'ultra light',
@@ -80,18 +80,18 @@ export default {
                         icon: dry
                     }
                 ],
-                tagLine : 'This fabric is incredibly light weight and dries in an instant'
+                tagLine : 'Rapid drying and moisture wicking, our slick poly will keep you cool through any sweaty situation'
             }
         },
         {
-            name : 'Perforated',
+            name : 'Knit Poly',
             image: perforated,
             details: {
                 weight : 'light',
                 touch : 'super slick stretch',
                 traits : [
                     {
-                        display: 'laser perforated patterns',
+                        display: 'laser perforated',
                         icon: perforatedIcon
                     },
                     {
@@ -103,7 +103,7 @@ export default {
                         icon : lite
                     }
                 ],
-                tagLine : 'Ventilate in style, with our laser perforated stretch blend'
+                tagLine : 'Smooth and airy, our knit poly will keep you cool through any sweaty situation. Plus, ventilate in style with the laser cut box-out details'
             }
         }
     ]

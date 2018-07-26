@@ -1,0 +1,44 @@
+.icon-new,
+.icon-temperature-sensitive,
+.icon-remove,
+.icon-menu-vertical,
+.icon-fabric,
+.icon-fabric-2,
+.icon-online-shop,
+.icon-right-arrow,
+.icon-shopping-bag,
+.icon-add,
+.icon-minus,
+.icon-air,
+.icon-dust,
+.icon-particle,
+.icon-laser-beam {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    vertical-align: -0.1em;
+}
+
+.icon-new > svg,
+.icon-temperature-sensitive > svg,
+.icon-remove > svg,
+.icon-menu-vertical > svg,
+.icon-fabric > svg,
+.icon-fabric-2 > svg,
+.icon-online-shop > svg,
+.icon-right-arrow > svg,
+.icon-shopping-bag > svg,
+.icon-add > svg,
+.icon-minus > svg,
+.icon-air > svg,
+.icon-dust > svg,
+.icon-particle > svg,
+.icon-laser-beam > svg {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    vertical-align: -0.1em;
+}
+

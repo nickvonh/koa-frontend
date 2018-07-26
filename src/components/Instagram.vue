@@ -1,15 +1,15 @@
 <template>
   <div class="igFeed" v-if="!!igFeed && igFeed.length > 0">
             <div class="title-box">
-                <h3>Share with us on Instagram</h3>
-                <h4 class="mini-header">Help us build a community of active women!</h4>
-                <h5>#TeamKoa #ActiveEveryDay</h5>
+                <h3>Help us build a community</h3>
+                <h4 class="mini-header">Share with us on Instagram</h4>
+                <h5>#TeamKoa #WorkYourKoa</h5>
             </div>
             <ul class="gallery" ref="gallery">
                 <li v-for="(img, key) in igFeed" :key="key" @click="igFunc(img)">
                     <div class="overlay">
                         <div>
-                            <img :src="heart" class="hearts"/>
+                            <svg v-html="heart" class="hearts"/>
                             <span v-if="img.likes.count">{{img.likes.count}}</span>
                         </div>
                         <div>
@@ -76,8 +76,8 @@ export default {
 </script>
 <style lang="stylus">
 .igFeed
+    margin-top 50px
     width 100%
-    max-width 1400px
     overflow hidden
     background white
     .title-box
@@ -120,10 +120,14 @@ export default {
                     display flex
                     justify-content center
                     align-items center
-                    img
+                    img, .hearts
                         width 25px
+                        height 25px
                         filter invert(1)
                         margin-right 15px
+                        svg
+                            width 100%
+                            height 100%
                     span 
                         font-weight 900
             &:hover

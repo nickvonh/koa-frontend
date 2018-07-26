@@ -3,11 +3,12 @@
             <carousel ref="carousel"
             :perPage="1"
             :loop="true"
-            :minSwipeDistance="40"
+            :minSwipeDistance="100"
             paginationActiveColor="#2c3e50"
             paginationColor="#ffffff">
                 <slide v-for="(each,index) in currentImages" :key="index">
-                    <img class="tileThumb" v-lazy="each.src" @click="selectProduct(product)"/>
+                    <div class="tileThumb" v-lazy:background-image="`${each.src}`" @click="selectProduct(product)"></div>
+                    <!-- <img class="tileThumb" v-lazy="each.src" @click="selectProduct(product)"/> -->
                 </slide>
             </carousel>
         <strong class="title-row">
@@ -68,13 +69,13 @@ export default {
         },
         selectProduct(product){
             console.log(product)
-            let color = product.variants.edges[0].node.selectedOptions.find(option => option.name === 'Color').value.toLowerCase().replace(/\//g,'-').replace(' ','-')
+            let color = this.color.toLowerCase().replace(/\//g,'-').replace(' ','-')
             
             console.log(color)
             if(!!this.$route.params.group){
-                this.$router.push({path:this.$route.params.group+'/'+product.handle+'/'+color+'/v2', params : {product : product.handle, color : color} })
+                this.$router.push({path:this.$route.params.group+'/'+product.handle+'/'+color, params : {product : product.handle, color : color} })
             }else{
-                this.$router.push({path:this.$route.params.collection+'/'+product.handle+'/'+color+'/v2', params : {product : product.handle, color : color} })
+                this.$router.push({path:this.$route.params.collection+'/'+product.handle+'/'+color, params : {product : product.handle, color : color} })
             }
         },
         selectColor(color){
@@ -111,9 +112,20 @@ export default {
     margin 15px 0
     overflow-x hidden
     border-radius 5px
-    .tileThumb 
-        width 300px
+    .VueCarousel
+        width 100%
         height 450px
+        .VueCarousel-wrapper
+            width 100%
+            height 90%
+            .VueCarousel-inner
+                height 100%
+    .tileThumb 
+        width auto
+        height 100%
+        background-size contain
+        background-position 50%
+        background-repeat no-repeat
     .title-row
         width 100%
         max-width 360px
@@ -158,11 +170,12 @@ export default {
         width 90%
         margin 25px 0
         background #f2f2f2
-        .tileThumb 
-            width 200px
-            height 300px
+        .VueCarousel
+            width 100%
+            max-height 350px
         .title-row
             padding 10px 0
+            padding-bottom 20px
             font-size 1.1em
             position relative
             justify-content center
@@ -171,4 +184,15 @@ export default {
             font-weight 600
             -webkit-font-smoothing antialiased
             font-size .8em
+
+.tileThumb[lazy]
+  transition .3s background-position ease
+
+.tileThumb[lazy="loading"]
+  opacity 0
+  background-position 100% !important
+
+.tileThumb[lazy="loaded"]
+  opacity 1
+  background-position 50% !important
 </style>
