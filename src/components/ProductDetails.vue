@@ -91,24 +91,24 @@ export default {
             if(!!this.reviews){
                 return new Map([
                     ['description', this.product.description],
-                    ['material', {
+                    ['material', !!this.fabric ? {
                         name : this.fabric.name,
                         tagline: this.fabric.details.tagLine,
                         traits : this.fabric.details.traits,
                         touch : this.fabric.details.touch
-                    }],
+                    } : {name : 'coming soon'} ],
                     ['fit', this.modelInfo],
                     ['reviews', this.reviews]
                 ])
             }else{
                 return new Map([
                     ['description', this.product.description],
-                    ['material', {
+                    ['material', !!this.fabric ? {
                         name : this.fabric.name,
                         tagline: this.fabric.details.tagLine,
                         traits : this.fabric.details.traits,
                         touch : this.fabric.details.touch
-                    }],
+                    } : {name : 'coming soon'}],
                     ['fit', this.modelInfo]
                 ])
             }

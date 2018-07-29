@@ -17,6 +17,73 @@ export default {
           }
         }
     }`,
+    productsByCollection : title => `query{
+        shop {
+            collections (first: 1, query: "title:'${title}'"){
+                edges {
+                    node {
+                        products(first:100){
+                            edges{
+                                node{    
+                                    id
+                                    handle
+                                    title
+                                    tags
+                                    onlineStoreUrl
+                                    options (first:3){
+                                        id
+                                        name
+                                        values
+                                    }
+                                    collections (first:100){
+                                        edges{
+                                            node{
+                                                id
+                                                handle
+                                                title
+                                            }
+                                        }
+                                    }
+                                    description
+                                    descriptionHtml
+                                    images (first:50){
+                                        edges{
+                                            node{
+                                                altText
+                                                src
+                                            }
+                                        }
+                                    }
+                                    variants (first: 100){
+                                        edges{
+                                            node{
+                                                id
+                                                product{
+                                                    id
+                                                    handle
+                                                }
+                                                selectedOptions{
+                                                    name
+                                                    value
+                                                }
+                                                title
+                                                available
+                                                compareAtPrice
+                                                price
+                                                image{
+                                                    src
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }`,
     productById : `query productById($id : ID!){
         node(id : $id){
             ... on Product{

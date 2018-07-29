@@ -8,7 +8,7 @@
     <nav-menu :collections="collections"></nav-menu>
     
     <cart></cart>
-    <router-view :products="products" :collections="collections" :class="{view : true, padTop : !isHome}"/>
+    <router-view :collections="collections" :class="{view : true, padTop : !isHome}"/>
   </div>
 </template>
 
@@ -30,22 +30,12 @@ export default {
     shop : {
       query: gql(queries.rootQuery),
       update: (shop => shop.shop)
-    },
-    products : {
-      query : gql(queries.productQuery),
-      update : (data => data.shop.products.edges.map(p => p.node))
     }
   },
   computed:{
     collections(){
       if(!!this.shop){
         return this.shop.collections.edges.filter(c => c.node.title !== 'giveaway').map(c => c.node)
-      }
-    },
-    prodsByCollection(){
-      if(!!this.products){
-        let prods = this.products.filter(p => p.collections.edges.find(e => e.node.handle === this.activeCollection))
-        return prods
       }
     },
     isHome() {

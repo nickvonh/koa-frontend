@@ -19,11 +19,24 @@ import Hammer from 'hammerjs'
 
 export default {
     name: 'prod-loop',
-    props: ['collection', 'collections', 'products', 'group'],
+    props: ['collection', 'collections', 'group'],
     components: { ProdTile },
+    apollo: {
+        prodsByCollection : {
+            query(){
+                if(!!this.activeCollection){
+                    return gql(queries.productsByCollection(this.activeCollection.title))
+                }else{
+                    return gql(queries.productsByCollection('Outer Layers'))
+                }
+            },
+            update : (prodsByCollection => prodsByCollection.shop.collections.edges[0].node.products.edges.map(each => each.node))
+        }
+    },
     data () {
         return {
-            hammer: null
+            hammer: null,
+            prodsByCollection: null
         }
     },
     mounted(){
@@ -51,31 +64,36 @@ export default {
         collection(nu,old){
             console.log(nu, old)
         }
+        // async activeCollection(nu, old){
+        //     console.log('nu -', nu.title)
+        //     let result = await this.$apollo.query({ query: gql(queries.productsByCollection), variables: {title:nu.title} });
+        //     console.log(result)
+        //     this.prodsByCollection = result.data.shop.collections.edges
+        // }
     },
     computed: {
-        prodsByCollection(){
-            if(!!this.products && !this.group){
-                let prods = this.products.filter(p => p.collections.edges.find(e => e.node.handle === this.collection))
-                return prods
-            }else if(!!this.products && !!this.group){
-                let prods = this.products.filter(p => p.tags.find((e)=>{
-                    let regex = new RegExp(this.group, 'i')
-                    return !!regex.test(e)
-                }))
-                return prods
+        activeCollection(){
+            if(!!this.collections){
+                return this.collections.find(c => c.handle === this.collection)
+            }else{
+                return false
             }
         },
         activeProd(){
             return !!this.$route.params.product
         },
         selectedProd(){
-            if(!!this.products){
-                return this.products.find(p => p.handle === this.$route.params.product)
+            if(!!this.prodsByCollection){
+                return this.prodsByCollection.find(p => p.handle === this.$route.params.product)
+            }else{
+                return false
             }
         },
         allImages(){
             if(!!this.products){
                 return this.products.map(p => p.images.edges[0].node.src)
+            }else{
+                return false
             }
         },
         collectionImage(){
@@ -85,6 +103,8 @@ export default {
                 if(!!collectionObj && !!collectionObj.image){
                     return collectionObj.image.src
                 }
+            }else{
+                return false
             }
         }
     },

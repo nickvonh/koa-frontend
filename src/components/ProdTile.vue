@@ -1,12 +1,33 @@
 <template>
     <li class="prodTile">
-            <carousel ref="carousel"
+            <div class="loader loader--style7" title="6" v-if="!currentImages">
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                    width="24px" height="30px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+                    <rect x="0" y="0" width="4" height="20" fill="#333">
+                    <animate attributeName="opacity" attributeType="XML"
+                        values="1; .2; 1" 
+                        begin="0s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="7" y="0" width="4" height="20" fill="#333">
+                    <animate attributeName="opacity" attributeType="XML"
+                        values="1; .2; 1" 
+                        begin="0.2s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="14" y="0" width="4" height="20" fill="#333">
+                    <animate attributeName="opacity" attributeType="XML"
+                        values="1; .2; 1" 
+                        begin="0.4s" dur="0.6s" repeatCount="indefinite" />
+                    </rect>
+                </svg>
+            </div>
+            <carousel v-if="!!currentImages" ref="carousel"
             :perPage="1"
             :loop="true"
             :minSwipeDistance="100"
             paginationActiveColor="#2c3e50"
-            paginationColor="#ffffff">
-                <slide v-for="(each,index) in currentImages" :key="index">
+            paginationColor="#ffffff"
+            >
+                <slide v-for="(each,index) in currentImages" :key="each.src">
                     <div class="tileThumb" v-lazy:background-image="`${each.src}`" @click="selectProduct(product)"></div>
                     <!-- <img class="tileThumb" v-lazy="each.src" @click="selectProduct(product)"/> -->
                 </slide>
@@ -52,6 +73,8 @@ export default {
             if(!!this.product){
                 let reg = new RegExp(this.color.replace('/','-').replace(' ','-'), 'i')
                 return this.product.images.edges.filter(i => !!reg.test(i.node.altText.replace(/\//g,'-').replace(' ','-'))).map(i => i.node)
+            }else{
+                return false
             }
         },
         isMobile(){
@@ -112,6 +135,7 @@ export default {
     margin 15px 0
     overflow-x hidden
     border-radius 5px
+    min-height 450px
     .VueCarousel
         width 100%
         height 450px
@@ -170,6 +194,7 @@ export default {
         width 90%
         margin 25px 0
         background #f2f2f2
+        max-height 350px
         .VueCarousel
             width 100%
             max-height 350px

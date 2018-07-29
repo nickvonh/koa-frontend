@@ -55,6 +55,22 @@ export default {
         {
             name : 'white',
             hex  : '#ffffff'
+        },
+        {
+            name : 'pale-blue',
+            hex : '#cdecff'
+        },
+        {
+            name: 'pale-lilac',
+            hex: '#d0d2e7'
+        },
+        {
+            name: 'cool-granite',
+            hex: ' #6b6c7c'
+        },
+        {
+            name: 'oatmeal',
+            hex: ' #f5f3f1'
         }
     ]
 }

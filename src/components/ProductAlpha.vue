@@ -16,7 +16,7 @@
             paginationColor="#f9f9f9"
             :navigationEnabled="isDesktop"
             :class="{'prod-hero':true, 'details': moreDetails, 'full': fullGallery}">
-                <slide v-for="(each,index) in currentImages" class="thumb-slide" :key="index">
+                <slide v-for="each in currentImages" class="thumb-slide" :key="each.src">
                     <div class="prod-img" v-lazy:background-image="each.src" @click="imgFunc"></div>
                     <!-- <img :src="each.src" @click="imgFunc"/> -->
                 </slide>
@@ -214,9 +214,11 @@ export default {
             if(!!this.tags){
                 let tag = this.tags.find(tag => {
                     return tag.type === 'fabric' && tag.value !== 'nylon-spandex'
-                }).value
+                })
 
-                return this.fabrics.find(f => f.name.toLowerCase().replace(' ','-') === tag)
+                if(!!tag){
+                    return this.fabrics.find(f => f.name.toLowerCase().replace(' ','-') === tag.value)
+                }
             }
         },
         shopId(){
