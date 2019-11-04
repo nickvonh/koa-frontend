@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "apollo-client": "^1.9.3",
-    "axios": "^0.17.1",
+    "axios": "^0.18.1",
     "graphql-tag": "^2.5.0",
     "hammerjs": "^2.0.8",
     "instafeed.js": "^1.4.1",
